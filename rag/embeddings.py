@@ -43,6 +43,8 @@ class GeminiEmbedder:
                 return np.array(vector, dtype=np.float32)
             except (APIError, ClientError, httpx.HTTPError, Exception) as e:
                 err_str = str(e)
+                if "401" in err_str or "UNAUTHENTICATED" in err_str or "API key not valid" in err_str:
+                    raise ValueError("Invalid Gemini API Key (401 UNAUTHENTICATED). Google rejected this key. Please obtain a valid Gemini API key from https://aistudio.google.com/app/apikey (valid keys start with 'AIzaSy...').")
                 if attempt < max_retries - 1:
                     if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str:
                         delay_match = re.search(r"retryDelay': '(\d+)", err_str)

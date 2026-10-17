@@ -270,7 +270,10 @@ with st.sidebar:
             active_key = user_key
         st.caption("Configured in .env or Streamlit Secrets for auto-login.")
     else:
-        st.caption("🟢 **AI Inference:** Gemini 3.8 Flash Active")
+        if active_key.startswith("AQ."):
+            st.warning("⚠️ **Note:** Configured key begins with 'AQ.' (unsupported token). Valid Gemini keys start with 'AIzaSy...'.")
+        else:
+            st.caption("🟢 **AI Inference:** Gemini 3.8 Flash Active")
 
     st.markdown("---")
     kpis = get_ecosystem_kpis()
@@ -864,19 +867,36 @@ elif nav_choice == "🧠 Ask GCC Intel (AI Research Agent)":
         if not active_key:
             st.error("⚠️ GEMINI_API_KEY is missing. Please enter your API key in the field above or in the left sidebar to execute research.")
         else:
-            with st.expander("⚙️ Agent Execution Graph & Audit Trail", expanded=True):
-                activity_container = st.container()
-                with st.spinner(f"Executing multi-step research on: '{query_to_execute}'..."):
-                    agent = GCCIntelAgent()
-                    result = agent.run(query_to_execute)
+            try:
+                with st.expander("⚙️ Agent Execution Graph & Audit Trail", expanded=True):
+                    activity_container = st.container()
+                    with st.spinner(f"Executing multi-step research on: '{query_to_execute}'..."):
+                        agent = GCCIntelAgent()
+                        result = agent.run(query_to_execute)
 
-                with activity_container:
-                    for step in result.get("status_log", []):
-                        st.markdown(f'<div class="agent-step">⚙️ {step}</div>', unsafe_allow_html=True)
+                    with activity_container:
+                        for step in result.get("status_log", []):
+                            st.markdown(f'<div class="agent-step">⚙️ {step}</div>', unsafe_allow_html=True)
 
-            # Store persistently in session state so results don't vanish on rerun
-            st.session_state["last_research_result"] = result
-            st.session_state["last_research_query"] = query_to_execute
+                # Store persistently in session state so results don't vanish on rerun
+                st.session_state["last_research_result"] = result
+                st.session_state["last_research_query"] = query_to_execute
+            except Exception as e:
+                err_msg = str(e)
+                st.error(f"❌ **Research Execution Error:** {err_msg}")
+                if "401" in err_msg or "UNAUTHENTICATED" in err_msg or "API key not valid" in err_msg:
+                    st.info("""
+                    **💡 How to Resolve (401 Invalid Key):**
+                    The API key configured in Streamlit Secrets was rejected by Google AI Studio (`ACCESS_TOKEN_TYPE_UNSUPPORTED`).
+                    
+                    1. Go to **[aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)** (it is completely free).
+                    2. Click **Create API Key**. (Valid Gemini API keys start with **`AIzaSy...`**).
+                    3. Update your key in Streamlit App Settings ➔ Secrets:
+                       ```toml
+                       GEMINI_API_KEY="AIzaSyYourNewKeyHere"
+                       ```
+                    4. Or paste it directly into the input field above and click **Unlock Terminal**.
+                    """)
 
     # Render persistent research dossier
     if st.session_state.get("last_research_result"):

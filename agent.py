@@ -51,7 +51,9 @@ def call_gemini_with_retry(prompt: str, max_retries: int = 5) -> str:
                     return response.text.strip()
             except Exception as e:
                 err_str = str(e)
-                if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str:
+                if "401" in err_str or "UNAUTHENTICATED" in err_str or "API key not valid" in err_str:
+                    raise ValueError("Invalid Gemini API Key (401 UNAUTHENTICATED). Google rejected this key. Please obtain a valid Gemini API key from https://aistudio.google.com/app/apikey (valid keys start with 'AIzaSy...').")
+                elif "429" in err_str or "RESOURCE_EXHAUSTED" in err_str:
                     delay_match = re.search(r"retryDelay': '(\d+)", err_str)
                     sleep_time = int(delay_match.group(1)) + 2 if delay_match else int(backoff)
                     print(f"[Rate Limit 429] Model '{model}' limited. Waiting {sleep_time}s...")
