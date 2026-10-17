@@ -3,6 +3,7 @@ import sys
 import json
 import streamlit as st
 import pandas as pd
+import altair as alt
 
 # Ensure project root is in python path
 sys.path.insert(0, os.path.dirname(__file__))
@@ -19,184 +20,199 @@ from rag.data_loader import (
 from rag.knowledge_indexer import build_or_load_gcc_index
 from agent import GCCIntelAgent
 
-# Streamlit Page Config
+# Streamlit Page Config - Wide Executive View
 st.set_page_config(
-    page_title=f"{APP_NAME} — {APP_TAGLINE}",
-    page_icon="🏢",
+    page_title="GCC INTEL | Market Intelligence Terminal for India GCCs",
+    page_icon="🏛️",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom Enterprise B2B SaaS Styling
+# Custom Institutional Enterprise CSS Theme
 st.markdown("""
 <style>
     /* Global Base */
     .stApp {
-        background-color: #0B0F17;
+        background-color: #080C14;
         color: #E2E8F0;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
     
-    /* Hero Header */
-    .hero-card {
-        background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
-        border: 1px solid #334155;
-        border-radius: 12px;
-        padding: 24px 28px;
-        margin-bottom: 24px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    /* Institutional Header Banner */
+    .terminal-header {
+        background: linear-gradient(135deg, #0D1527 0%, #162035 50%, #0F172A 100%);
+        border: 1px solid #22324F;
+        border-radius: 10px;
+        padding: 22px 28px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
     }
-    .hero-title {
-        color: #38BDF8;
-        font-size: 2.2rem;
+    .terminal-tag {
+        font-size: 0.72rem;
         font-weight: 700;
-        letter-spacing: -0.5px;
-        margin: 0;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-    .hero-subtitle {
-        color: #94A3B8;
-        font-size: 1.05rem;
-        margin-top: 6px;
-        margin-bottom: 0px;
-        line-height: 1.5;
-    }
-    .hero-badge {
-        background-color: rgba(56, 189, 248, 0.12);
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
         color: #38BDF8;
+        background-color: rgba(56, 189, 248, 0.1);
         border: 1px solid rgba(56, 189, 248, 0.3);
         padding: 4px 10px;
-        border-radius: 20px;
-        font-size: 0.78rem;
-        font-weight: 600;
+        border-radius: 4px;
         display: inline-block;
-        margin-bottom: 8px;
+        margin-bottom: 10px;
     }
-
-    /* KPI Metrics Cards */
-    .kpi-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 16px;
-        margin-bottom: 24px;
-    }
-    .kpi-card {
-        background-color: #131B2E;
-        border: 1px solid #1E293B;
-        border-radius: 10px;
-        padding: 16px 20px;
-        transition: transform 0.15s ease, border-color 0.15s ease;
-    }
-    .kpi-card:hover {
-        border-color: #38BDF8;
-        transform: translateY(-2px);
-    }
-    .kpi-val {
-        font-size: 1.8rem;
-        font-weight: 700;
+    .terminal-title {
         color: #F8FAFC;
+        font-size: 2.1rem;
+        font-weight: 750;
+        letter-spacing: -0.5px;
         margin: 0;
     }
-    .kpi-label {
+    .terminal-subtitle {
         color: #94A3B8;
-        font-size: 0.85rem;
+        font-size: 0.98rem;
+        margin-top: 8px;
+        line-height: 1.55;
+        max-width: 950px;
+    }
+    
+    /* Live Telemetry Ribbon */
+    .telemetry-ribbon {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        background-color: #0F172A;
+        border: 1px solid #1E293B;
+        border-radius: 8px;
+        padding: 10px 18px;
+        margin-bottom: 22px;
+        font-size: 0.8rem;
+        color: #94A3B8;
+    }
+    .telemetry-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .telemetry-item b {
+        color: #F1F5F9;
+    }
+
+    /* KPI Metric Tiles */
+    .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 14px;
+        margin-bottom: 22px;
+    }
+    .kpi-tile {
+        background-color: #0E1626;
+        border: 1px solid #1E2D4A;
+        border-radius: 8px;
+        padding: 16px 18px;
+        border-top: 3px solid #38BDF8;
+    }
+    .kpi-tile.emerald { border-top-color: #10B981; }
+    .kpi-tile.amber { border-top-color: #F59E0B; }
+    .kpi-tile.purple { border-top-color: #A855F7; }
+
+    .kpi-number {
+        font-size: 1.75rem;
+        font-weight: 750;
+        color: #F8FAFC;
+        margin: 0;
+        line-height: 1.2;
+    }
+    .kpi-desc {
+        color: #94A3B8;
+        font-size: 0.82rem;
         font-weight: 500;
         margin-top: 4px;
     }
-    .kpi-source {
+    .kpi-cite {
         color: #64748B;
-        font-size: 0.75rem;
+        font-size: 0.72rem;
         margin-top: 6px;
     }
 
-    /* Verification & Status Badges */
-    .badge-verified {
-        background-color: rgba(16, 185, 129, 0.15);
-        color: #34D399;
-        border: 1px solid rgba(16, 185, 129, 0.35);
-        padding: 3px 8px;
-        border-radius: 12px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        display: inline-block;
+    /* Actionable Prompt Question Buttons */
+    .prompt-card {
+        background-color: #0E1626;
+        border: 1px solid #1E2D4A;
+        border-radius: 8px;
+        padding: 14px 18px;
+        margin-bottom: 12px;
+        transition: border-color 0.2s ease;
     }
-    .badge-announcement {
-        background-color: rgba(56, 189, 248, 0.15);
-        color: #38BDF8;
-        border: 1px solid rgba(56, 189, 248, 0.35);
-        padding: 3px 8px;
-        border-radius: 12px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        display: inline-block;
-    }
-    .badge-estimate {
-        background-color: rgba(245, 158, 11, 0.15);
-        color: #FBBF24;
-        border: 1px solid rgba(245, 158, 11, 0.35);
-        padding: 3px 8px;
-        border-radius: 12px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        display: inline-block;
+    .prompt-card:hover {
+        border-color: #38BDF8;
     }
 
-    /* Record & Content Cards */
+    /* Card styling */
     .intel-card {
-        background-color: #131B2E;
-        border: 1px solid #1E293B;
-        border-radius: 10px;
+        background-color: #0E1626;
+        border: 1px solid #1E2D4A;
+        border-radius: 8px;
         padding: 18px 22px;
         margin-bottom: 14px;
     }
     .intel-card:hover {
-        border-color: #334155;
+        border-color: #2E436E;
     }
-    .card-title {
-        color: #F8FAFC;
-        font-size: 1.15rem;
+
+    /* Badges */
+    .badge-verified {
+        background-color: rgba(16, 185, 129, 0.12);
+        color: #34D399;
+        border: 1px solid rgba(16, 185, 129, 0.35);
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 0.72rem;
         font-weight: 600;
-        margin: 0 0 6px 0;
     }
-    .card-subtitle {
-        color: #94A3B8;
-        font-size: 0.88rem;
-        margin-bottom: 10px;
+    .badge-announcement {
+        background-color: rgba(56, 189, 248, 0.12);
+        color: #38BDF8;
+        border: 1px solid rgba(56, 189, 248, 0.35);
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 0.72rem;
+        font-weight: 600;
+    }
+    .badge-estimate {
+        background-color: rgba(245, 158, 11, 0.12);
+        color: #FBBF24;
+        border: 1px solid rgba(245, 158, 11, 0.35);
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 0.72rem;
+        font-weight: 600;
     }
     .chip {
-        background-color: #1E293B;
+        background-color: #172338;
         color: #93C5FD;
-        border: 1px solid #334155;
-        padding: 3px 8px;
-        border-radius: 6px;
-        font-size: 0.75rem;
-        margin-right: 6px;
+        border: 1px solid #223554;
+        padding: 2px 7px;
+        border-radius: 4px;
+        font-size: 0.72rem;
+        margin-right: 5px;
         margin-bottom: 4px;
         display: inline-block;
     }
-
-    /* Source Links */
-    .source-link {
-        color: #38BDF8;
-        text-decoration: none;
-        font-size: 0.8rem;
-    }
-    .source-link:hover {
-        text-decoration: underline;
-    }
-
-    /* Activity Feed in Agent */
     .agent-step {
-        background-color: #1E293B;
+        background-color: #0F172A;
         border-left: 3px solid #38BDF8;
-        padding: 8px 12px;
-        border-radius: 4px;
+        padding: 7px 12px;
         font-family: monospace;
-        font-size: 0.82rem;
-        margin-bottom: 6px;
+        font-size: 0.8rem;
+        margin-bottom: 5px;
         color: #CBD5E1;
+    }
+    .calc-result-box {
+        background: linear-gradient(135deg, #0F1E36 0%, #132747 100%);
+        border: 1px solid #264673;
+        border-radius: 8px;
+        padding: 18px 22px;
+        margin-top: 15px;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -204,40 +220,41 @@ st.markdown("""
 # Session State Initialization
 if "agent_chat_history" not in st.session_state:
     st.session_state["agent_chat_history"] = []
-if "selected_gcc_id" not in st.session_state:
-    st.session_state["selected_gcc_id"] = None
+if "active_research_query" not in st.session_state:
+    st.session_state["active_research_query"] = ""
 if "vector_store" not in st.session_state:
-    # Auto-load pre-built GCC vector index
     try:
         st.session_state["vector_store"] = build_or_load_gcc_index()
     except Exception:
         st.session_state["vector_store"] = None
 
-# Sidebar - Brand & Navigation
+# Sidebar Configuration
 with st.sidebar:
     st.markdown("""
     <div style="padding: 10px 0 16px 0;">
-        <h2 style="color: #38BDF8; margin: 0; font-size: 1.6rem; font-weight: 700;">🏢 GCC Intel</h2>
-        <p style="color: #94A3B8; margin: 2px 0 0 0; font-size: 0.85rem;">India's GCC Market Intelligence Platform</p>
+        <span style="font-size: 0.7rem; font-weight: 700; color: #38BDF8; letter-spacing: 1px;">INSTITUTIONAL SUITE</span>
+        <h2 style="color: #F8FAFC; margin: 2px 0 0 0; font-size: 1.55rem; font-weight: 750;">GCC INTEL</h2>
+        <p style="color: #94A3B8; margin: 2px 0 0 0; font-size: 0.82rem;">India's Market Intelligence Platform</p>
     </div>
     """, unsafe_allow_html=True)
 
     nav_choice = st.radio(
         "Navigation",
         [
-            "🌐 Overview",
-            "🏢 GCC Explorer",
-            "🏙️ City Intelligence",
-            "🧠 Ask GCC Intel",
-            "🤝 Service Providers",
-            "📚 Sources & Methodology"
+            "🌐 Overview & Market Signals",
+            "🧮 Location Cost & Setup Modeler",
+            "🏢 GCC Explorer & Dossiers",
+            "🏙️ City Intelligence & Analytics",
+            "🧠 Ask GCC Intel (AI Research Agent)",
+            "🤝 Service Providers & EOR",
+            "📚 Data Quality & Sources Registry"
         ],
         label_visibility="collapsed"
     )
 
     st.markdown("---")
     
-    # Credential Check (Quiet Enterprise Pattern)
+    # Credential Check
     active_key = get_gemini_api_key()
     if not active_key:
         st.markdown("**🔑 API Key Required**")
@@ -247,147 +264,306 @@ with st.sidebar:
             active_key = user_key
         st.caption("Configured in .env or Streamlit Secrets for auto-login.")
     else:
-        st.caption("🟢 **Intelligence Engine:** Gemini 3.8 Flash Active")
+        st.caption("🟢 **AI Inference:** Gemini 3.8 Flash Active")
 
     st.markdown("---")
     kpis = get_ecosystem_kpis()
     st.markdown(f"""
-    <div style="font-size: 0.78rem; color: #64748B;">
-        <b>Curated Registry:</b> {kpis['curated_gcc_count']} GCCs<br>
-        <b>Monitored Metros:</b> 5 Cities<br>
-        <b>Tracked Workforce:</b> {kpis['total_tracked_headcount']:,} roles<br>
-        <b>Data Verified:</b> Oct 2024
+    <div style="font-size: 0.76rem; color: #64748B; line-height: 1.5;">
+        <b>Audited GCCs:</b> {kpis['curated_gcc_count']} records<br>
+        <b>Tracked Workforce:</b> {kpis['total_tracked_headcount']:,} employees<br>
+        <b>Monitored Hubs:</b> 5 Tier-1 Metros<br>
+        <b>Verification Cycle:</b> October 2024 Audit
     </div>
     """, unsafe_allow_html=True)
 
 # -------------------------------------------------------------
-# 1. OVERVIEW VIEW
+# 1. OVERVIEW & MARKET SIGNALS
 # -------------------------------------------------------------
-if nav_choice == "🌐 Overview":
+if nav_choice == "🌐 Overview & Market Signals":
     st.markdown("""
-    <div class="hero-card">
-        <span class="hero-badge">Enterprise Market Intelligence</span>
-        <h1 class="hero-title">🏢 GCC Intel</h1>
-        <p class="hero-subtitle">
-            The evidence-backed market intelligence platform for global enterprises evaluating, establishing, 
-            and expanding Global Capability Centres (GCCs) across India's premier tech and business hubs.
+    <div class="terminal-header">
+        <span class="terminal-tag">Institutional Market Intelligence Terminal</span>
+        <h1 class="terminal-title">India GCC Ecosystem Advisory Platform</h1>
+        <p class="terminal-subtitle">
+            An evidence-backed market intelligence terminal engineered for global enterprise executives, 
+            private equity sponsors, and strategy teams evaluating location feasibility, state incentives, 
+            real estate dynamics, and talent economics across India.
         </p>
     </div>
     """, unsafe_allow_html=True)
 
-    # Macro Indicators with Verified Citations
+    # Telemetry Ribbon
+    st.markdown("""
+    <div class="telemetry-ribbon">
+        <div class="telemetry-item">🟢 Live Index: <b>32 Audited GCCs</b></div>
+        <div class="telemetry-item">🏛️ Policies: <b>Karnataka 2024 | Tamil Nadu 2022 | Telangana TS-iPASS</b></div>
+        <div class="telemetry-item">🏢 Real Estate: <b>CBRE Q2 2024</b></div>
+        <div class="telemetry-item">💼 Compensation: <b>Michael Page 2024 Guide</b></div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Macro Indicators
     kpis = get_ecosystem_kpis()
     st.markdown(f"""
-    <div class="kpi-container">
-        <div class="kpi-card">
-            <div class="kpi-val">{kpis['macro_india_gccs']}</div>
-            <div class="kpi-label">Total GCCs in India</div>
-            <div class="kpi-source">Source: {kpis['macro_source_label']}</div>
+    <div class="kpi-grid">
+        <div class="kpi-tile">
+            <div class="kpi-number">{kpis['macro_india_gccs']}</div>
+            <div class="kpi-desc">Total Operational GCCs in India</div>
+            <div class="kpi-cite">Source: {kpis['macro_source_label']}</div>
         </div>
-        <div class="kpi-card">
-            <div class="kpi-val">{kpis['macro_talent_pool']}</div>
-            <div class="kpi-label">Specialized Tech Workforce</div>
-            <div class="kpi-source">Source: NASSCOM GCC 4.0 Report</div>
+        <div class="kpi-tile emerald">
+            <div class="kpi-number">{kpis['macro_talent_pool']}</div>
+            <div class="kpi-desc">Specialized Tech & R&D Workforce</div>
+            <div class="kpi-cite">Source: NASSCOM GCC 4.0 Report</div>
         </div>
-        <div class="kpi-card">
-            <div class="kpi-val">{kpis['macro_economic_value']}</div>
-            <div class="kpi-label">Annual Economic Value</div>
-            <div class="kpi-source">Projected $100B+ by 2030</div>
+        <div class="kpi-tile amber">
+            <div class="kpi-number">{kpis['macro_economic_value']}</div>
+            <div class="kpi-desc">Annual Direct Economic Value</div>
+            <div class="kpi-cite">Projected $100B+ by 2030</div>
         </div>
-        <div class="kpi-card">
-            <div class="kpi-val">{kpis['curated_gcc_count']}</div>
-            <div class="kpi-label">Audited Marquee GCCs</div>
-            <div class="kpi-source">100% Sourced & Verified Records</div>
+        <div class="kpi-tile purple">
+            <div class="kpi-number">{kpis['curated_gcc_count']}</div>
+            <div class="kpi-desc">Audited Marquee GCC Case Files</div>
+            <div class="kpi-cite">100% Primary Source Backed</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-    # Quick Jump to Research Question
-    st.subheader("🔍 Quick Market Intelligence Research")
-    quick_query = st.text_input(
-        "Ask a strategic question about India's GCC landscape:",
-        placeholder="e.g. Which cities should a US fintech company consider for a 300-person GCC?",
-        key="quick_query_input"
-    )
-    col_ask, col_compare = st.columns([1, 4])
-    with col_ask:
-        if st.button("Research with AI ➔", type="primary") and quick_query:
-            st.session_state["active_research_query"] = quick_query
-            st.info("Tip: Click **🧠 Ask GCC Intel** in the sidebar to view the full verified research report!")
+    st.markdown("### 🎯 Strategic Inquiries Showcase (What You Can Ask)")
+    st.markdown("""
+    Below are real-world strategic decision questions global executives and consultants evaluate. 
+    **Click any card to instantly run the AI Research Agent with source verification:**
+    """)
+
+    col_q1, col_q2 = st.columns(2)
+
+    with col_q1:
+        st.markdown("**🏦 BFSI, FinTech & Strategy**")
+        if st.button("💳 Which cities should a US fintech company consider for a 300-person GCC?"):
+            st.session_state["active_research_query"] = "Which cities should a US fintech company consider for a 300-person GCC?"
+            st.info("Query queued! Click **🧠 Ask GCC Intel** in the sidebar to view full briefing.")
+
+        if st.button("⚖️ Compare Bengaluru vs Hyderabad for financial software & risk modelling"):
+            st.session_state["active_research_query"] = "Compare Bengaluru and Hyderabad for financial software, quantitative risk modelling, and real estate costs."
+            st.info("Query queued! Click **🧠 Ask GCC Intel** in the sidebar to view full briefing.")
+
+        st.markdown("**🧬 Healthcare, Pharma & Life Sciences**")
+        if st.button("🔬 Where are India's leading healthcare & pharmaceutical R&D GCCs located?"):
+            st.session_state["active_research_query"] = "Where are India's leading healthcare and pharmaceutical R&D GCCs located, and what functions do AstraZeneca and Novartis run?"
+            st.info("Query queued! Click **🧠 Ask GCC Intel** in the sidebar to view full briefing.")
+
+    with col_q2:
+        st.markdown("**📜 State Policies, Grants & Subsidies**")
+        if st.button("🏛️ What state incentives are available in Tamil Nadu vs Karnataka for a new GCC?"):
+            st.session_state["active_research_query"] = "What state incentives are available in Tamil Nadu vs Karnataka for a new GCC, including lease subsidies and training grants?"
+            st.info("Query queued! Click **🧠 Ask GCC Intel** in the sidebar to view full briefing.")
+
+        if st.button("⚡ How does Telangana's TS-iPASS single-window clearance guarantee approval timelines?"):
+            st.session_state["active_research_query"] = "How does Telangana's TS-iPASS single-window clearance guarantee approval timelines for new IT and GCC investments?"
+            st.info("Query queued! Click **🧠 Ask GCC Intel** in the sidebar to view full briefing.")
+
+        st.markdown("**🛡️ Zero-Hallucination Audit Test**")
+        if st.button("🔍 Test Abstention: Does Apple or Tesla have an audited secret GCC in Antarctica?"):
+            st.session_state["active_research_query"] = "Does Apple or Tesla have an audited secret GCC in Antarctica?"
+            st.info("Query queued! Click **🧠 Ask GCC Intel** to watch the agent strictly refuse to hallucinate.")
 
     st.markdown("---")
 
-    # Recent GCC Investment & Expansion Highlights
-    st.subheader("📰 Recent Marquee GCC Expansions & Government Milestones")
-    
-    col1, col2 = st.columns(2)
-    with col1:
-        st.markdown("""
-        <div class="intel-card">
-            <div class="badge-verified">Verified Corporate Fact</div>
-            <div class="card-title" style="margin-top: 6px;">Boeing Inaugurates 43-Acre Technology Campus</div>
-            <div class="card-subtitle">Devanahalli Aerospace Park, Bengaluru • INR 1,600 Cr ($200M) Investment</div>
-            <p style="font-size: 0.85rem; color: #CBD5E1; margin-bottom: 8px;">
-                Boeing's largest engineering research facility outside the US, employing 6,000+ engineers developing flight control avionics, materials engineering, and aerodynamics software.
-            </p>
-            <a href="https://www.boeing.co.in/" target="_blank" class="source-link">View Boeing Press Release ↗</a>
-        </div>
-        """, unsafe_allow_html=True)
+    # Visual Snapshot: India GCC Market Share & Grade-A Lease Comparison
+    st.subheader("📊 Market Intelligence Telemetry")
+    col_chart1, col_chart2 = st.columns(2)
 
-        st.markdown("""
-        <div class="intel-card">
-            <div class="badge-verified">Verified Corporate Fact</div>
-            <div class="card-title" style="margin-top: 6px;">AstraZeneca Expands Chennai Global Technology Hub</div>
-            <div class="card-subtitle">Ramanujan IT City, Taramani, Chennai • INR 250 Cr Expansion</div>
-            <p style="font-size: 0.85rem; color: #CBD5E1; margin-bottom: 8px;">
-                Adding 1,300+ clinical data scientists, bioinformaticians, and healthcare enterprise cloud engineers supporting global drug development and FDA filings.
-            </p>
-            <a href="https://www.astrazeneca.com/country-sites/india.html" target="_blank" class="source-link">View AstraZeneca Disclosure ↗</a>
-        </div>
-        """, unsafe_allow_html=True)
+    with col_chart1:
+        st.markdown("**India GCC Hub Market Share (% of Total Centers)**")
+        share_data = pd.DataFrame({
+            "City": ["Bengaluru", "Hyderabad", "Delhi-NCR", "Chennai", "Pune"],
+            "Market Share (%)": [39.5, 21.0, 14.5, 13.5, 11.5]
+        })
+        chart_share = alt.Chart(share_data).mark_bar(cornerRadiusTopRight=4, cornerRadiusBottomRight=4, color="#38BDF8").encode(
+            x=alt.X("Market Share (%):Q", title="Market Share (%)"),
+            y=alt.Y("City:N", sort="-x", title="Metropolitan Hub"),
+            tooltip=["City", "Market Share (%)"]
+        ).properties(height=240)
+        st.altair_chart(chart_share, use_container_width=True)
+        st.caption("Source: NASSCOM & Zinnov India GCC Landscape Report 2024")
 
-    with col2:
-        st.markdown("""
-        <div class="intel-card">
-            <div class="badge-announcement">Government Statutory Policy</div>
-            <div class="card-title" style="margin-top: 6px;">Karnataka Launches Dedicated GCC Policy 2024–2029</div>
-            <div class="card-subtitle">Dept of IT, Bt and S&T, Govt of Karnataka</div>
-            <p style="font-size: 0.85rem; color: #CBD5E1; margin-bottom: 8px;">
-                India's first dedicated state policy targeting 500 new GCCs by 2029, offering AI Co-Innovation matching grants (up to INR 1 Cr), Beyond-Bengaluru rental subsidies, and female hiring bonuses.
-            </p>
-            <a href="https://itbtst.karnataka.gov.in/policies/gcc-policy-2024" target="_blank" class="source-link">View Policy Notification ↗</a>
-        </div>
-        """, unsafe_allow_html=True)
-
-        st.markdown("""
-        <div class="intel-card">
-            <div class="badge-verified">Verified Corporate Fact</div>
-            <div class="card-title" style="margin-top: 6px;">Ford Submits LOI to Repurpose Chennai Complex</div>
-            <div class="card-subtitle">Maraimalai Nagar, Chennai • Export Tech & Manufacturing Hub</div>
-            <p style="font-size: 0.85rem; color: #CBD5E1; margin-bottom: 8px;">
-                Expanding Ford Business Solutions' existing 12,000-person Chennai engineering footprint to engineer EV architectures and global software systems.
-            </p>
-            <a href="https://media.ford.com/" target="_blank" class="source-link">View Ford Announcement ↗</a>
-        </div>
-        """, unsafe_allow_html=True)
+    with col_chart2:
+        st.markdown("**Commercial Real Estate: Grade-A Lease Rates (INR/sq.ft/mo)**")
+        rent_data = pd.DataFrame({
+            "City": ["Bengaluru", "Gurugram", "Hyderabad", "Pune", "Chennai"],
+            "Min Rent": [85, 80, 65, 60, 55],
+            "Max Rent": [125, 135, 90, 85, 80]
+        })
+        rent_melted = pd.melt(rent_data, id_vars=["City"], value_vars=["Min Rent", "Max Rent"], var_name="Range", value_name="INR_sqft_mo")
+        chart_rent = alt.Chart(rent_melted).mark_bar(cornerRadiusTopLeft=3, cornerRadiusTopRight=3).encode(
+            x=alt.X("City:N", title="City"),
+            y=alt.Y("INR_sqft_mo:Q", title="Monthly Lease (INR / sq.ft)"),
+            color=alt.Color("Range:N", scale=alt.Scale(domain=["Min Rent", "Max Rent"], range=["#223D69", "#38BDF8"])),
+            tooltip=["City", "Range", "INR_sqft_mo"]
+        ).properties(height=240)
+        st.altair_chart(chart_rent, use_container_width=True)
+        st.caption("Source: CBRE Research India Office Figures Q2 2024")
 
 # -------------------------------------------------------------
-# 2. GCC EXPLORER VIEW
+# 2. INTERACTIVE LOCATION COST & SETUP MODELER (NEW FEATURE!)
 # -------------------------------------------------------------
-elif nav_choice == "🏢 GCC Explorer":
+elif nav_choice == "🧮 Location Cost & Setup Modeler":
     st.markdown("""
     <div style="margin-bottom: 20px;">
-        <h2 style="color: #38BDF8; margin: 0; font-size: 1.8rem; font-weight: 700;">🏢 GCC Explorer</h2>
+        <span class="terminal-tag">Executive Modeling Tool</span>
+        <h2 style="color: #F8FAFC; margin: 2px 0 0 0; font-size: 1.8rem; font-weight: 750;">🧮 GCC Location Setup & OpEx Modeler</h2>
         <p style="color: #94A3B8; margin-top: 4px; font-size: 0.95rem;">
-            Search and filter verified Global Capability Centres operating across India's top tech hubs.
+            Simulate annual real estate lease outlays, engineering payroll bases, and state policy incentives across Indian tech hubs.
         </p>
     </div>
     """, unsafe_allow_html=True)
 
-    # Search & Filter Controls
+    col_inp1, col_inp2, col_inp3 = st.columns(3)
+    with col_inp1:
+        target_city = st.selectbox("Target Location Hub", ["Bengaluru", "Hyderabad", "Chennai", "Pune", "Gurugram"])
+    with col_inp2:
+        team_size = st.slider("Target Workforce Headcount", min_value=50, max_value=1000, value=250, step=25)
+    with col_inp3:
+        primary_function = st.selectbox("Primary Business Function", [
+            "Software & Cloud Engineering",
+            "Data Science & AI / ML",
+            "Quantitative Finance & Risk",
+            "Embedded Hardware / Automotive R&D"
+        ])
+
+    # Benchmarks lookup
+    city_intel = get_city_intelligence(target_city)
+    
+    # Square footage assumption: 90 sq. ft. per employee (industry standard for Grade-A tech parks)
+    total_sqft = team_size * 90
+    
+    # Rental calculations
+    # Parse rental rate string e.g. "85 - 125"
+    rent_str = city_intel["real_estate"]["grade_a_avg_rent_inr_sqft_mo"]
+    rent_parts = [float(x.strip()) for x in rent_str.split("-")]
+    min_rent, max_rent = rent_parts[0], rent_parts[1]
+    avg_rent = (min_rent + max_rent) / 2.0
+    
+    # Annual Real Estate Cost = sqft * avg_rent * 12
+    annual_re_inr = total_sqft * avg_rent * 12
+    annual_re_cr = annual_re_inr / 10_000_000.0  # In INR Crores
+    annual_re_usd = annual_re_inr / (83.5 * 10_000_000.0) # In USD Millions (~83.5 INR/USD)
+
+    # Payroll benchmarks lookup
+    if "AI" in primary_function:
+        avg_ctc_lpa = 20.0
+    elif "Finance" in primary_function:
+        avg_ctc_lpa = 14.5
+    elif "Hardware" in primary_function:
+        avg_ctc_lpa = 15.0
+    else:
+        avg_ctc_lpa = 17.5
+
+    annual_payroll_inr = team_size * (avg_ctc_lpa * 100_000.0)
+    annual_payroll_cr = annual_payroll_inr / 10_000_000.0
+    annual_payroll_usd = annual_payroll_inr / (83.5 * 10_000_000.0)
+
+    # State incentive potential
+    subsidy_notes = []
+    estimated_savings_cr = 0.0
+    if target_city == "Chennai":
+        # TN R&D Training Subsidy: up to INR 6,000/employee/mo for 12 months = INR 72,000/emp
+        tn_training_cr = (team_size * 72_000) / 10_000_000.0
+        estimated_savings_cr += tn_training_cr
+        subsidy_notes.append(f"Tamil Nadu R&D Training Subsidy: Potential ~INR {tn_training_cr:.2f} Cr (INR 6k/emp/mo for 12 mos)")
+        subsidy_notes.append("50% Stamp Duty Exemption on office lease agreement")
+    elif target_city == "Karnataka":
+        subsidy_notes.append("Karnataka GCC Policy 2024: Up to INR 1 Cr AI Co-Innovation Matching Grant")
+        subsidy_notes.append("100% Electricity Duty Exemption for 5 years")
+    elif target_city == "Hyderabad":
+        subsidy_notes.append("TS-iPASS: 100% Stamp Duty reimbursement on office registration")
+        subsidy_notes.append("Power tariff rebate of INR 1.00/unit for 3 years")
+    elif target_city == "Pune":
+        subsidy_notes.append("Maharashtra IT Policy: 100% Stamp Duty Exemption + 10-15y Electricity Duty Waiver")
+    elif target_city == "Gurugram":
+        # Haryana ESDM: up to INR 48,000/employee/year
+        hr_emp_cr = (team_size * 48_000) / 10_000_000.0
+        estimated_savings_cr += hr_emp_cr
+        subsidy_notes.append(f"Haryana Employment Generation Subsidy: Potential ~INR {hr_emp_cr:.2f} Cr/year for 5 years")
+
+    # Render Simulation Summary Cards
+    st.markdown("### 📊 Simulated Annual Operating Outlay (Indicative Model)")
+    col_r1, col_r2, col_r3, col_r4 = st.columns(4)
+
+    with col_r1:
+        st.metric(
+            label="Total Space Requirement",
+            value=f"{total_sqft:,} sq.ft",
+            help="Calculated at 90 sq. ft. per seat (Grade-A tech park standard)."
+        )
+    with col_r2:
+        st.metric(
+            label="Est. Annual Office Lease",
+            value=f"₹{annual_re_cr:.2f} Cr",
+            delta=f"${annual_re_usd:.2f}M USD",
+            delta_color="off"
+        )
+    with col_r3:
+        st.metric(
+            label="Est. Base Talent Payroll",
+            value=f"₹{annual_payroll_cr:.2f} Cr",
+            delta=f"${annual_payroll_usd:.2f}M USD",
+            delta_color="off"
+        )
+    with col_r4:
+        total_opex_cr = annual_re_cr + annual_payroll_cr
+        st.metric(
+            label="Est. Annual Core OpEx",
+            value=f"₹{total_opex_cr:.2f} Cr",
+            delta=f"${total_opex_cr / 8.35:.2f}M USD",
+            delta_color="off"
+        )
+
+    # Detailed Micro-Market Breakdown
+    st.markdown(f"#### 📍 Recommended Micro-Markets in {target_city}")
+    micros = city_intel["real_estate"]["prime_micromarkets"]
+    col_m = st.columns(len(micros))
+    for idx, m in enumerate(micros):
+        with col_m[idx]:
+            st.markdown(f"""
+            <div class="intel-card" style="padding: 12px 14px;">
+                <div style="font-weight: 700; color: #F8FAFC; font-size: 0.95rem;">{m['name']}</div>
+                <div style="color: #38BDF8; font-size: 0.85rem; margin-top: 4px;">{m['rent_range']}</div>
+                <div style="color: #94A3B8; font-size: 0.78rem; margin-top: 2px;">Vacancy: {m['vacancy_pct']}</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+    # Subsidies & Policy Callout
+    if subsidy_notes:
+        st.markdown("""
+        <div class="calc-result-box">
+            <span style="font-size: 0.75rem; font-weight: 700; color: #34D399; letter-spacing: 1px;">STATUTORY INCENTIVE OPPORTUNITIES</span>
+            <h4 style="color: #F8FAFC; margin: 4px 0 10px 0;">Applicable State Policy Concessions</h4>
+        """, unsafe_allow_html=True)
+        for s in subsidy_notes:
+            st.markdown(f"• **{s}**")
+        st.caption(f"Authority: {city_intel['state_policy']['department']} ({city_intel['state_policy']['policy_name']})")
+        st.markdown("</div>", unsafe_allow_html=True)
+
+# -------------------------------------------------------------
+# 3. GCC EXPLORER & DOSSIERS
+# -------------------------------------------------------------
+elif nav_choice == "🏢 GCC Explorer & Dossiers":
+    st.markdown("""
+    <div style="margin-bottom: 20px;">
+        <span class="terminal-tag">Curated Case Registry</span>
+        <h2 style="color: #F8FAFC; margin: 2px 0 0 0; font-size: 1.8rem; font-weight: 750;">🏢 GCC Explorer & Case Dossiers</h2>
+        <p style="color: #94A3B8; margin-top: 4px; font-size: 0.95rem;">
+            Filter and inspect 32 audited Global Capability Centres with verified locations, workforce scales, and expansions.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Filter Controls
     col_s1, col_s2, col_s3, col_s4 = st.columns([3, 2, 2, 2])
     with col_s1:
-        search_kw = st.text_input("Search companies, functions, or keywords", placeholder="e.g. Goldman Sachs, Cyber, AI, Clinical...")
+        search_kw = st.text_input("Search company, parent, or capability", placeholder="e.g. Goldman, Boeing, Cyber, Clinical...")
     with col_s2:
         city_filter = st.selectbox("City Filter", ["All Cities", "Bengaluru", "Hyderabad", "Chennai", "Pune", "Gurugram"])
     with col_s3:
@@ -396,106 +572,101 @@ elif nav_choice == "🏢 GCC Explorer":
             "Healthcare & Life Sciences", "Automotive & Mobility", "Aerospace & Defence", "Semiconductor & Hardware", "Energy & Resources"
         ])
     with col_s4:
-        status_filter = st.selectbox("Data Confidence", ["All Statuses", "Verified Fact", "Company Announcement", "Industry Estimate"])
+        status_filter = st.selectbox("Verification Tier", ["All Statuses", "Verified Fact", "Company Announcement", "Industry Estimate"])
 
-    col_sort1, col_sort2 = st.columns([2, 2])
-    with col_sort1:
-        sort_by = st.selectbox("Sort By", ["company_name", "headcount", "establishment_year", "city"], index=0)
-    with col_sort2:
-        sort_order = st.radio("Order", ["Ascending", "Descending"], horizontal=True, index=0)
-
-    # Retrieve filtered records
     records = get_gcc_records(
         search_query=search_kw,
         city=city_filter,
         industry=industry_filter,
-        verification_status=status_filter,
-        sort_by=sort_by,
-        sort_ascending=(sort_order == "Ascending")
+        verification_status=status_filter
     )
 
-    st.markdown(f"**Showing {len(records)} audited GCC records**")
+    col_cnt, col_exp = st.columns([3, 1])
+    with col_cnt:
+        st.markdown(f"**Showing {len(records)} Audited GCC Case Profiles**")
+    with col_exp:
+        # Export as CSV button
+        if records:
+            df_export = pd.DataFrame(records)
+            csv_data = df_export.to_csv(index=False).encode('utf-8')
+            st.download_button(
+                label="📥 Export Directory (CSV)",
+                data=csv_data,
+                file_name="gcc_intel_directory.csv",
+                mime="text/csv"
+            )
 
-    # Render Records Table or Detailed Cards
-    view_mode = st.radio("View Format", ["Structured Data Table", "Detailed Profiles"], horizontal=True)
+    view_mode = st.radio("Display Mode", ["Executive Case Cards", "Master Data Table"], horizontal=True)
 
-    if view_mode == "Structured Data Table":
-        # Format table data
+    if view_mode == "Master Data Table":
         table_rows = []
         for r in records:
             badge = "🟢 Verified" if r["verification_status"] == "Verified Fact" else ("🔵 Announcement" if r["verification_status"] == "Company Announcement" else "🟡 Estimate")
             table_rows.append({
-                "Company Name": r["company_name"],
-                "Parent / HQ": f"{r['parent_company']} ({r['global_headquarters']})",
+                "Company": r["company_name"],
+                "Parent & Global HQ": f"{r['parent_company']} ({r['global_headquarters']})",
                 "City": r["city"],
                 "Industry": r["industry"],
                 "Est. Year": r.get("establishment_year", "N/A"),
-                "Tracked Size": f"{r['headcount']:,} ({r['headcount_type']})",
+                "Headcount": f"{r['headcount']:,} ({r['headcount_type']})",
                 "Confidence": badge,
                 "Source Link": r["source_url"]
             })
-        
-        df = pd.DataFrame(table_rows)
         st.dataframe(
-            df,
+            pd.DataFrame(table_rows),
             column_config={
-                "Source Link": st.column_config.LinkColumn("Source URL", display_text="View Source ↗")
+                "Source Link": st.column_config.LinkColumn("Primary Source", display_text="Open Disclosure ↗")
             },
             use_container_width=True,
             hide_index=True
         )
-
     else:
-        # Detailed Card Grid
         for r in records:
-            status_badge_html = (
+            badge_html = (
                 f'<span class="badge-verified">✓ {r["verification_status"]}</span>' if r["verification_status"] == "Verified Fact"
                 else (f'<span class="badge-announcement">ℹ {r["verification_status"]}</span>' if r["verification_status"] == "Company Announcement"
                 else f'<span class="badge-estimate">⚠ {r["verification_status"]}</span>')
             )
-
             functions_chips = "".join([f'<span class="chip">{f}</span>' for f in r.get("business_functions", [])])
-            headcount_text = f"{r['headcount']:,} employees ({r['headcount_type']})"
 
-            with st.container():
-                st.markdown(f"""
-                <div class="intel-card">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                        <div>
-                            <span class="card-title">{r['company_name']}</span>
-                            <span style="color: #64748B; font-size: 0.85rem; margin-left: 8px;">Est. {r.get('establishment_year', 'N/A')}</span>
-                            <div class="card-subtitle">{r['parent_company']} • Global HQ: {r['global_headquarters']}</div>
-                        </div>
-                        <div>{status_badge_html}</div>
+            st.markdown(f"""
+            <div class="intel-card">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div>
+                        <span style="font-size: 1.25rem; font-weight: 700; color: #F8FAFC;">{r['company_name']}</span>
+                        <span style="color: #64748B; font-size: 0.85rem; margin-left: 8px;">Est. {r.get('establishment_year', 'N/A')}</span>
+                        <div style="color: #94A3B8; font-size: 0.86rem; margin-top: 2px;">{r['parent_company']} • Global HQ: {r['global_headquarters']}</div>
                     </div>
-                    <div style="margin: 6px 0 10px 0;">
-                        <b>Location:</b> {r['city']}, {r['state']} &nbsp;|&nbsp; 
-                        <b>Industry:</b> {r['industry']} &nbsp;|&nbsp; 
-                        <b>Workforce:</b> {headcount_text}
-                    </div>
-                    <div style="margin-bottom: 10px;">
-                        <b>Core Functions:</b> {functions_chips}
-                    </div>
-                    <div style="background-color: #0B0F17; border-left: 3px solid #38BDF8; padding: 8px 12px; border-radius: 4px; font-size: 0.85rem; margin-bottom: 10px;">
-                        <b>Recent Expansion / Activity:</b> {r['recent_announcement']}
-                    </div>
-                    <div style="font-size: 0.8rem; color: #94A3B8;">
-                        <b>Source:</b> <a href="{r['source_url']}" target="_blank" class="source-link">{r['source_title']}</a> 
-                        &nbsp;•&nbsp; Source Date: {r['source_date']} 
-                        &nbsp;•&nbsp; Verified: {r['last_verified_date']}
-                    </div>
+                    <div>{badge_html}</div>
                 </div>
-                """, unsafe_allow_html=True)
+                <div style="margin: 8px 0; font-size: 0.85rem;">
+                    <b>Hub:</b> {r['city']}, {r['state']} &nbsp;|&nbsp; 
+                    <b>Industry:</b> {r['industry']} &nbsp;|&nbsp; 
+                    <b>Tracked Size:</b> {r['headcount']:,} roles ({r['headcount_type']})
+                </div>
+                <div style="margin-bottom: 8px;">
+                    {functions_chips}
+                </div>
+                <div style="background-color: #070B12; border-left: 3px solid #38BDF8; padding: 8px 12px; border-radius: 4px; font-size: 0.84rem; margin-bottom: 8px;">
+                    <b>Recent Expansion Activity:</b> {r['recent_announcement']}
+                </div>
+                <div style="font-size: 0.78rem; color: #94A3B8;">
+                    <b>Source:</b> <a href="{r['source_url']}" target="_blank" style="color: #38BDF8; text-decoration: none;">{r['source_title']}</a> 
+                    • Published: {r['source_date']} • Verified: {r['last_verified_date']}
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
 
 # -------------------------------------------------------------
-# 3. CITY INTELLIGENCE & COMPARISON VIEW
+# 4. CITY INTELLIGENCE & ANALYTICS
 # -------------------------------------------------------------
-elif nav_choice == "🏙️ City Intelligence":
+elif nav_choice == "🏙️ City Intelligence & Analytics":
     st.markdown("""
     <div style="margin-bottom: 20px;">
-        <h2 style="color: #38BDF8; margin: 0; font-size: 1.8rem; font-weight: 700;">🏙️ City Intelligence & Comparison</h2>
+        <span class="terminal-tag">Comparative Location Analytics</span>
+        <h2 style="color: #F8FAFC; margin: 2px 0 0 0; font-size: 1.8rem; font-weight: 750;">🏙️ City Intelligence & Policy Benchmarks</h2>
         <p style="color: #94A3B8; margin-top: 4px; font-size: 0.95rem;">
-            Compare India's top 5 GCC hubs across talent depth, office leasing benchmarks, state policies, and infrastructure.
+            Direct side-by-side comparison across talent pools, Grade-A real estate rentals, state incentive frameworks, and infrastructure.
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -511,47 +682,46 @@ elif nav_choice == "🏙️ City Intelligence":
     )
 
     if not selected_cities:
-        st.warning("Please select at least 1 city to view intelligence benchmarks.")
+        st.warning("Please select at least 1 city to view intelligence.")
     else:
         filtered_cities = [c for c in all_cities if c["name"] in selected_cities]
 
-        # Multi-Column City Cards
+        # Top Macro Cards
         cols = st.columns(len(filtered_cities))
         for idx, c in enumerate(filtered_cities):
             with cols[idx]:
                 st.markdown(f"""
-                <div class="intel-card" style="min-height: 260px;">
-                    <div class="badge-announcement">{c['tier']}</div>
-                    <h3 style="color: #F8FAFC; margin: 8px 0 2px 0;">{c['name']}</h3>
-                    <div style="color: #38BDF8; font-size: 0.85rem; margin-bottom: 8px;">{c['state']}</div>
-                    <p style="color: #94A3B8; font-size: 0.82rem; font-style: italic; margin-bottom: 12px;">"{c['tagline']}"</p>
-                    <div style="font-size: 0.85rem; line-height: 1.6;">
+                <div class="intel-card" style="min-height: 230px;">
+                    <span class="badge-announcement">{c['tier']}</span>
+                    <h3 style="color: #F8FAFC; margin: 6px 0 2px 0;">{c['name']}</h3>
+                    <div style="color: #38BDF8; font-size: 0.85rem; margin-bottom: 6px;">{c['state']}</div>
+                    <p style="color: #94A3B8; font-size: 0.8rem; font-style: italic; margin-bottom: 10px;">"{c['tagline']}"</p>
+                    <div style="font-size: 0.82rem; line-height: 1.55;">
                         <b>Market Share:</b> {c['market_share_pct']}% of India GCCs<br>
-                        <b>Est. GCC Count:</b> {c['estimated_gcc_count']}<br>
-                        <b>Est. Workforce:</b> {c['estimated_workforce']}<br>
-                        <b>Grade-A Rents:</b> INR {c['real_estate']['grade_a_avg_rent_inr_sqft_mo']}/sq.ft/mo
+                        <b>Est. Centers:</b> {c['estimated_gcc_count']}<br>
+                        <b>Grade-A Rents:</b> INR {c['real_estate']['grade_a_avg_rent_inr_sqft_mo']}/sq.ft/mo<br>
+                        <b>Tech Workforce:</b> {c['estimated_workforce']}
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
 
-        st.markdown("### 📊 Side-by-Side Metric Comparison")
+        st.markdown("### 📊 Detailed Matrix Comparison")
 
-        # 1. Real Estate Benchmarks
-        with st.expander("🏢 Commercial Real Estate & Micro-Markets (CBRE Q2 2024)", expanded=True):
+        # 1. Real Estate
+        with st.expander("🏢 Commercial Real Estate & Vacancy Rates (CBRE Q2 2024)", expanded=True):
             re_rows = []
             for c in filtered_cities:
                 re = c["real_estate"]
                 micros_str = " | ".join([f"{m['name']}: {m['rent_range']} (Vac: {m['vacancy_pct']})" for m in re["prime_micromarkets"]])
                 re_rows.append({
                     "City": c["name"],
-                    "Grade-A Avg Rental": f"INR {re['grade_a_avg_rent_inr_sqft_mo']} /sq.ft/month",
-                    "Key Micro-Markets & Vacancy": micros_str,
-                    "Data Confidence": re["data_type"],
+                    "Grade-A Lease Range": f"INR {re['grade_a_avg_rent_inr_sqft_mo']} /sq.ft/mo",
+                    "Prime Micro-Markets & Vacancy": micros_str,
                     "Source": re["source_label"]
                 })
             st.dataframe(pd.DataFrame(re_rows), use_container_width=True, hide_index=True)
 
-        # 2. Talent & Compensation Benchmarks
+        # 2. Talent
         with st.expander("💼 Talent Pool & Salary Benchmarks (Michael Page 2024)", expanded=True):
             sal_rows = []
             for c in filtered_cities:
@@ -562,103 +732,89 @@ elif nav_choice == "🏙️ City Intelligence":
                     "Data Science / AI (3-5y)": tb["median_ctc_inr_lpa"]["data_scientist_ai_3_5_yrs"],
                     "Finance/Risk (3-5y)": tb["median_ctc_inr_lpa"]["finance_risk_analyst_3_5_yrs"],
                     "Eng Director (10-15y)": tb["median_ctc_inr_lpa"]["eng_director_manager_10_15_yrs"],
-                    "Est. Attrition": tb["attrition_rate_est"]
+                    "Attr. Rate": tb["attrition_rate_est"]
                 })
             st.dataframe(pd.DataFrame(sal_rows), use_container_width=True, hide_index=True)
 
-        # 3. State Policy & Statutory Incentives
-        with st.expander("📜 State GCC Policies & Statutory Incentives", expanded=True):
+        # 3. State Policy
+        with st.expander("📜 State GCC Policies & Statutory Subsidies", expanded=True):
             for c in filtered_cities:
                 pol = c["state_policy"]
                 st.markdown(f"#### 🏛️ {c['name']} — {pol['policy_name']}")
-                st.caption(f"Authority: {pol['department']} • Confidence: {pol['data_type']}")
+                st.caption(f"Authority: {pol['department']}")
                 for inc in pol["key_incentives"]:
                     st.markdown(f"• {inc}")
                 st.markdown("---")
 
-        # 4. Strategic Pros & Cons
-        with st.expander("⚖️ Strategic Trade-offs & Recommendation", expanded=True):
+        # 4. Strategic Tradeoffs
+        with st.expander("⚖️ Strategic Trade-offs & Best-Fit Profile", expanded=True):
             for c in filtered_cities:
                 to = c["strategic_tradeoffs"]
                 st.markdown(f"#### {c['name']}")
-                col_p, col_c = st.columns(2)
-                with col_p:
-                    st.markdown("**Core Advantages (Pros):**")
+                c1, c2 = st.columns(2)
+                with c1:
+                    st.markdown("**Key Advantages (Pros):**")
                     for p in to["pros"]:
                         st.markdown(f"✓ {p}")
-                with col_c:
+                with c2:
                     st.markdown("**Key Trade-offs (Cons):**")
                     for con in to["cons"]:
                         st.markdown(f"⚠ {con}")
-                st.info(f"**Recommended Entrant Profile:** {to['recommended_for']}")
+                st.info(f"**Recommended For:** {to['recommended_for']}")
 
-        # AI-Generated City Comparison Synthesis
-        st.markdown("### 🤖 Evidence-Backed Executive Comparison Synthesis")
-        if st.button("Generate Comparative Trade-off Advisory with AI", type="primary"):
-            with st.spinner("Analyzing city benchmarks and synthesizing strategic entry trade-offs..."):
+        # AI Comparative Synthesis
+        st.markdown("### 🤖 Generate Executive City Synthesis with AI")
+        if st.button("Synthesize Location Trade-offs ➔", type="primary"):
+            with st.spinner("Analyzing location trade-offs across talent, real estate, and state policies..."):
                 agent = GCCIntelAgent()
                 prompt_q = f"Compare {', '.join(selected_cities)} for a prospective global enterprise setting up a GCC in India. Detail the talent cost, real estate, and state incentive trade-offs."
                 ai_res = agent.run(prompt_q)
                 st.markdown(ai_res["final_answer"])
 
 # -------------------------------------------------------------
-# 4. ASK GCC INTEL VIEW (AI RESEARCH ASSISTANT)
+# 5. ASK GCC INTEL (AI RESEARCH AGENT)
 # -------------------------------------------------------------
-elif nav_choice == "🧠 Ask GCC Intel":
+elif nav_choice == "🧠 Ask GCC Intel (AI Research Agent)":
     st.markdown("""
     <div style="margin-bottom: 20px;">
-        <h2 style="color: #38BDF8; margin: 0; font-size: 1.8rem; font-weight: 700;">🧠 Ask GCC Intel</h2>
+        <span class="terminal-tag">Agentic Intelligence Engine</span>
+        <h2 style="color: #F8FAFC; margin: 2px 0 0 0; font-size: 1.8rem; font-weight: 750;">🧠 Ask GCC Intel</h2>
         <p style="color: #94A3B8; margin-top: 4px; font-size: 0.95rem;">
-            Conversational market research assistant powered by LangGraph, FAISS semantic retrieval, 
-            and automated source verification.
+            Conversational market research agent built with LangGraph, FAISS semantic vector retrieval, and automated source verification.
         </p>
     </div>
     """, unsafe_allow_html=True)
 
-    # Preset Suggested Questions
-    st.markdown("**Suggested Strategic Inquiries (Click to run):**")
-    suggested_cols = st.columns(3)
-    preset_q = None
+    # Pre-set questions
+    st.markdown("**Click any curated strategic prompt to execute:**")
+    c_p1, c_p2, c_p3 = st.columns(3)
+    p_choice = None
+    with c_p1:
+        if st.button("FinTech 300-person GCC ➔"):
+            p_choice = "Which cities should a US fintech company consider for a 300-person GCC?"
+    with c_p2:
+        if st.button("Chennai Functions & Tech ➔"):
+            p_choice = "Find GCCs in Chennai that have finance, engineering, or analytics functions."
+    with c_p3:
+        if st.button("Tamil Nadu State Subsidies ➔"):
+            p_choice = "What state incentives might be relevant when establishing a GCC in Tamil Nadu?"
 
-    with suggested_cols[0]:
-        if st.button("Fintech GCC for 300 People ➔"):
-            preset_q = "Which cities should a US fintech company consider for a 300-person GCC?"
-    with suggested_cols[1]:
-        if st.button("GCCs in Chennai by Function ➔"):
-            preset_q = "Find GCCs in Chennai that have finance, engineering, or analytics functions."
-    with suggested_cols[2]:
-        if st.button("Tamil Nadu State Incentives ➔"):
-            preset_q = "What state incentives might be relevant when establishing a GCC in Tamil Nadu?"
-
-    suggested_cols_2 = st.columns(2)
-    with suggested_cols_2[0]:
-        if st.button("Recent Marquee Expansions ➔"):
-            preset_q = "Which companies have recently announced GCC expansions in India?"
-    with suggested_cols_2[1]:
-        if st.button("Compare Bengaluru vs Chennai ➔"):
-            preset_q = "Compare Bengaluru and Chennai for an analytics-focused GCC."
-
-    # Check if coming from Overview quick search
-    initial_val = preset_q or st.session_state.get("active_research_query", "")
+    default_val = p_choice or st.session_state.get("active_research_query", "")
 
     user_query = st.text_input(
-        "Enter your GCC research inquiry:",
-        value=initial_val,
+        "Enter strategic GCC inquiry:",
+        value=default_val,
         placeholder="e.g. Compare office leasing costs and state incentives between Hyderabad and Bengaluru..."
     )
 
-    col_btn, col_blank = st.columns([1, 4])
-    with col_btn:
-        run_query = st.button("Run Research Agent", type="primary")
-
-    if (run_query or preset_q) and user_query:
+    if st.button("Execute Research Agent", type="primary") and user_query:
         active_key = get_gemini_api_key()
         if not active_key:
-            st.error("⚠️ GEMINI_API_KEY is missing. Please enter your Gemini API Key in the left sidebar.")
+            st.error("⚠️ GEMINI_API_KEY is missing. Please configure your key in the left sidebar.")
         else:
-            with st.expander("⚙️ Agentic Execution Graph & Retrieval Telemetry", expanded=True):
+            with st.expander("⚙️ Agent Execution Graph & Audit Trail", expanded=True):
                 activity_container = st.container()
-                with st.spinner("GCC Intel Agent executing multi-step retrieval and claim verification..."):
+                with st.spinner("Executing multi-step semantic retrieval & claim verification..."):
                     agent = GCCIntelAgent()
                     result = agent.run(user_query)
 
@@ -666,24 +822,24 @@ elif nav_choice == "🧠 Ask GCC Intel":
                     for step in result["status_log"]:
                         st.markdown(f'<div class="agent-step">⚙️ {step}</div>', unsafe_allow_html=True)
 
-            # Verification Status Callout
             if result.get("abstained"):
-                st.warning("⚠️ **Abstention Policy Active:** Insufficient verified evidence found in the dataset to answer reliably without hallucinating.")
+                st.warning("⚠️ **Abstention Policy Active:** Data not found in audited knowledge base. Agent strictly refused to fabricate.")
             elif result.get("is_supported"):
-                st.success("✓ **Fully Verified:** All substantive claims grounded in audited GCC Intel source dossiers.")
+                st.success("✓ **Fully Verified:** Claims audited and grounded against primary GCC Intel dossiers.")
 
-            st.markdown("### 📋 Executive Market Intelligence Briefing")
+            st.markdown("### 📋 Executive Advisory Briefing")
             st.markdown(result["final_answer"])
 
 # -------------------------------------------------------------
-# 5. SERVICE PROVIDERS DIRECTORY VIEW
+# 6. SERVICE PROVIDERS & EOR
 # -------------------------------------------------------------
-elif nav_choice == "🤝 Service Providers":
+elif nav_choice == "🤝 Service Providers & EOR":
     st.markdown("""
     <div style="margin-bottom: 20px;">
-        <h2 style="color: #38BDF8; margin: 0; font-size: 1.8rem; font-weight: 700;">🤝 Service Provider Directory</h2>
+        <span class="terminal-tag">Enablement Partner Ecosystem</span>
+        <h2 style="color: #F8FAFC; margin: 2px 0 0 0; font-size: 1.8rem; font-weight: 750;">🤝 GCC Service Providers & Incubation Partners</h2>
         <p style="color: #94A3B8; margin-top: 4px; font-size: 0.95rem;">
-            Curated ecosystem partners supporting GCC strategy, commercial real estate, legal structuring, recruitment, and Employer of Record (EOR) incubation.
+            Vetted enablement partners for turnkey GCC setup, corporate legal structuring, Grade-A real estate brokerage, and Employer of Record (EOR) hiring.
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -699,57 +855,54 @@ elif nav_choice == "🤝 Service Providers":
             "Payroll & Employer of Record (EOR)"
         ])
     with col_sp_search:
-        sp_kw = st.text_input("Search providers, services, or locations", placeholder="e.g. Incubation, EOR, Lease, SAM, CBRE...")
+        sp_kw = st.text_input("Filter by capability or location", placeholder="e.g. Incubation, EOR, Lease, SAM, CBRE...")
 
     providers = get_service_providers(category=category_choice, search_query=sp_kw)
-    st.markdown(f"**Showing {len(providers)} vetted enablement partners**")
+    st.markdown(f"**Showing {len(providers)} Vetted Partners**")
 
     for sp in providers:
-        services_chips = "".join([f'<span class="chip">{s}</span>' for s in sp.get("services_offered", [])])
-        locations_str = ", ".join(sp.get("locations_served", []))
-
+        chips = "".join([f'<span class="chip">{s}</span>' for s in sp.get("services_offered", [])])
         st.markdown(f"""
         <div class="intel-card">
             <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                 <div>
-                    <span class="card-title">{sp['name']}</span>
-                    <div class="card-subtitle">{sp['category']} • {sp['sub_category']}</div>
+                    <span style="font-size: 1.2rem; font-weight: 700; color: #F8FAFC;">{sp['name']}</span>
+                    <div style="color: #38BDF8; font-size: 0.85rem;">{sp['category']} • {sp['sub_category']}</div>
                 </div>
                 <div class="badge-verified">{sp['verification_status']}</div>
             </div>
-            <div style="margin: 6px 0 10px 0; font-size: 0.85rem;">
+            <div style="margin: 8px 0; font-size: 0.85rem;">
                 <b>Global HQ:</b> {sp['headquarters']} &nbsp;|&nbsp; 
-                <b>Locations Served:</b> {locations_str}
+                <b>Locations Served:</b> {', '.join(sp.get('locations_served', []))}
             </div>
-            <div style="margin-bottom: 10px;">
-                <b>Core Capabilities:</b> {services_chips}
-            </div>
-            <div style="background-color: #0B0F17; border-left: 3px solid #10B981; padding: 8px 12px; border-radius: 4px; font-size: 0.85rem; margin-bottom: 10px;">
-                <b>Documented GCC Track Record:</b> {sp['documented_track_record']}
+            <div style="margin-bottom: 8px;">{chips}</div>
+            <div style="background-color: #070B12; border-left: 3px solid #10B981; padding: 8px 12px; border-radius: 4px; font-size: 0.84rem; margin-bottom: 8px;">
+                <b>Documented GCC Experience:</b> {sp['documented_track_record']}
             </div>
             <div>
-                <a href="{sp['source_url']}" target="_blank" class="source-link">Visit Official Portal ↗</a>
+                <a href="{sp['source_url']}" target="_blank" style="color: #38BDF8; font-size: 0.8rem; text-decoration: none;">Visit Partner Portal ↗</a>
             </div>
         </div>
         """, unsafe_allow_html=True)
 
 # -------------------------------------------------------------
-# 6. SOURCES & METHODOLOGY VIEW
+# 7. DATA QUALITY & SOURCES REGISTRY
 # -------------------------------------------------------------
-elif nav_choice == "📚 Sources & Methodology":
+elif nav_choice == "📚 Data Quality & Sources Registry":
     st.markdown("""
     <div style="margin-bottom: 20px;">
-        <h2 style="color: #38BDF8; margin: 0; font-size: 1.8rem; font-weight: 700;">📚 Sources, Methodology & Data Quality</h2>
+        <span class="terminal-tag">Data Governance & Provenance</span>
+        <h2 style="color: #F8FAFC; margin: 2px 0 0 0; font-size: 1.8rem; font-weight: 750;">📚 Sources, Methodology & Data Quality</h2>
         <p style="color: #94A3B8; margin-top: 4px; font-size: 0.95rem;">
-            Transparent provenance, government policy registries, and conflict resolution methodology.
+            Full provenance registry, government policy gazettes, and handling of conflicting data.
         </p>
     </div>
     """, unsafe_allow_html=True)
 
     st.markdown("""
-    ### 🛡️ Data Quality & Provenance Principles
-    GCC Intel enforces strict enterprise data hygiene rules:
-    1. **Zero Hallucination Policy:** If verified evidence is absent from our repository, the AI research assistant explicitly states what is missing rather than inventing statistics.
+    ### 🛡️ Enterprise Data Governance Framework
+    GCC Intel enforces strict data auditing protocols:
+    1. **Zero Hallucination Policy:** If verified evidence is absent from our repository, the research agent explicitly states what is missing instead of fabricating plausible-sounding facts.
     2. **Multi-Source Triangulation:** We distinguish **Verified Facts** (official corporate releases, SEC/regulatory filings, state gazettes) from **Market Estimates** (salary surveys, broker forecasts).
     3. **Micro-Market Reality:** We do not publish single misleading city-wide real estate averages without listing micro-market ranges (e.g. Outer Ring Road vs Whitefield in Bengaluru).
     """)
@@ -768,19 +921,11 @@ elif nav_choice == "📚 Sources & Methodology":
             "Canonical Link": s["url"]
         })
 
-    df_sources = pd.DataFrame(sources_data)
     st.dataframe(
-        df_sources,
+        pd.DataFrame(sources_data),
         column_config={
-            "Canonical Link": st.column_config.LinkColumn("Canonical URL", display_text="Open Source ↗")
+            "Canonical Link": st.column_config.LinkColumn("Primary Source", display_text="Open Publication ↗")
         },
         use_container_width=True,
         hide_index=True
     )
-
-    st.markdown("---")
-    st.markdown("""
-    ### ⚖️ Handling Disagreeing & Conflicting Data
-    - **Real Estate Rental Variances:** Commercial lease rates in Indian metros vary dramatically by sub-market and building grade. For example, DLF Cyber City in Gurugram commands INR 125-165/sq.ft/mo, whereas Sohna Road leases at INR 55-75/sq.ft/mo. GCC Intel presents granular micro-market ranges rather than blended averages.
-    - **Headcount Discrepancies:** Companies frequently announce future target headcount (e.g. "Plans to hire 3,000 engineers") which differs from current on-the-ground employees. We tag each figure with `Verified Actual`, `Company Announcement`, or `Industry Estimate`.
-    """)
