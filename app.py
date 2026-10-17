@@ -220,8 +220,14 @@ st.markdown("""
 # Session State Initialization
 if "agent_chat_history" not in st.session_state:
     st.session_state["agent_chat_history"] = []
-if "active_research_query" not in st.session_state:
-    st.session_state["active_research_query"] = ""
+if "research_prompt_input" not in st.session_state:
+    st.session_state["research_prompt_input"] = ""
+if "trigger_agent_run" not in st.session_state:
+    st.session_state["trigger_agent_run"] = False
+if "last_research_result" not in st.session_state:
+    st.session_state["last_research_result"] = None
+if "last_research_query" not in st.session_state:
+    st.session_state["last_research_query"] = ""
 if "vector_store" not in st.session_state:
     try:
         st.session_state["vector_store"] = build_or_load_gcc_index()
@@ -344,32 +350,38 @@ if nav_choice == "🌐 Overview & Market Signals":
     with col_q1:
         st.markdown("**🏦 BFSI, FinTech & Strategy**")
         if st.button("💳 Which cities should a US fintech company consider for a 300-person GCC?"):
-            st.session_state["active_research_query"] = "Which cities should a US fintech company consider for a 300-person GCC?"
-            st.info("Query queued! Click **🧠 Ask GCC Intel** in the sidebar to view full briefing.")
+            st.session_state["research_prompt_input"] = "Which cities should a US fintech company consider for a 300-person GCC?"
+            st.session_state["trigger_agent_run"] = True
+            st.info("✓ Query queued! Navigate to **🧠 Ask GCC Intel** in the sidebar to view full briefing.")
 
         if st.button("⚖️ Compare Bengaluru vs Hyderabad for financial software & risk modelling"):
-            st.session_state["active_research_query"] = "Compare Bengaluru and Hyderabad for financial software, quantitative risk modelling, and real estate costs."
-            st.info("Query queued! Click **🧠 Ask GCC Intel** in the sidebar to view full briefing.")
+            st.session_state["research_prompt_input"] = "Compare Bengaluru and Hyderabad for financial software, quantitative risk modelling, and real estate costs."
+            st.session_state["trigger_agent_run"] = True
+            st.info("✓ Query queued! Navigate to **🧠 Ask GCC Intel** in the sidebar to view full briefing.")
 
         st.markdown("**🧬 Healthcare, Pharma & Life Sciences**")
         if st.button("🔬 Where are India's leading healthcare & pharmaceutical R&D GCCs located?"):
-            st.session_state["active_research_query"] = "Where are India's leading healthcare and pharmaceutical R&D GCCs located, and what functions do AstraZeneca and Novartis run?"
-            st.info("Query queued! Click **🧠 Ask GCC Intel** in the sidebar to view full briefing.")
+            st.session_state["research_prompt_input"] = "Where are India's leading healthcare and pharmaceutical R&D GCCs located, and what functions do AstraZeneca and Novartis run?"
+            st.session_state["trigger_agent_run"] = True
+            st.info("✓ Query queued! Navigate to **🧠 Ask GCC Intel** in the sidebar to view full briefing.")
 
     with col_q2:
         st.markdown("**📜 State Policies, Grants & Subsidies**")
         if st.button("🏛️ What state incentives are available in Tamil Nadu vs Karnataka for a new GCC?"):
-            st.session_state["active_research_query"] = "What state incentives are available in Tamil Nadu vs Karnataka for a new GCC, including lease subsidies and training grants?"
-            st.info("Query queued! Click **🧠 Ask GCC Intel** in the sidebar to view full briefing.")
+            st.session_state["research_prompt_input"] = "What state incentives are available in Tamil Nadu vs Karnataka for a new GCC, including lease subsidies and training grants?"
+            st.session_state["trigger_agent_run"] = True
+            st.info("✓ Query queued! Navigate to **🧠 Ask GCC Intel** in the sidebar to view full briefing.")
 
         if st.button("⚡ How does Telangana's TS-iPASS single-window clearance guarantee approval timelines?"):
-            st.session_state["active_research_query"] = "How does Telangana's TS-iPASS single-window clearance guarantee approval timelines for new IT and GCC investments?"
-            st.info("Query queued! Click **🧠 Ask GCC Intel** in the sidebar to view full briefing.")
+            st.session_state["research_prompt_input"] = "How does Telangana's TS-iPASS single-window clearance guarantee approval timelines for new IT and GCC investments?"
+            st.session_state["trigger_agent_run"] = True
+            st.info("✓ Query queued! Navigate to **🧠 Ask GCC Intel** in the sidebar to view full briefing.")
 
         st.markdown("**🛡️ Zero-Hallucination Audit Test**")
         if st.button("🔍 Test Abstention: Does Apple or Tesla have an audited secret GCC in Antarctica?"):
-            st.session_state["active_research_query"] = "Does Apple or Tesla have an audited secret GCC in Antarctica?"
-            st.info("Query queued! Click **🧠 Ask GCC Intel** to watch the agent strictly refuse to hallucinate.")
+            st.session_state["research_prompt_input"] = "Does Apple or Tesla have an audited secret GCC in Antarctica?"
+            st.session_state["trigger_agent_run"] = True
+            st.info("✓ Query queued! Navigate to **🧠 Ask GCC Intel** to watch the agent strictly refuse to hallucinate.")
 
     st.markdown("---")
 
@@ -788,50 +800,98 @@ elif nav_choice == "🧠 Ask GCC Intel (AI Research Agent)":
     </div>
     """, unsafe_allow_html=True)
 
-    # Pre-set questions
-    st.markdown("**Click any curated strategic prompt to execute:**")
+    # API Key Verification & Inline Entry
+    active_key = get_gemini_api_key()
+    if not active_key:
+        st.warning("⚠️ **Gemini API Key Required:** Please configure `GEMINI_API_KEY` in Streamlit Cloud Secrets, or enter your key below to unlock AI research queries:")
+        col_k1, col_k2 = st.columns([4, 1])
+        with col_k1:
+            direct_api_key = st.text_input("Enter Gemini API Key (stored securely for this session):", type="password", key="inline_agent_key")
+        with col_k2:
+            st.write("")
+            st.write("")
+            if st.button("Unlock Terminal ➔", type="primary"):
+                if direct_api_key.strip():
+                    st.session_state["user_gemini_api_key"] = direct_api_key.strip()
+                    st.success("✓ API Key activated!")
+                    st.rerun()
+                else:
+                    st.error("Please enter a valid Gemini API key.")
+
+    # Pre-set questions with 1-click execution
+    st.markdown("**Click any curated strategic prompt to execute immediately:**")
     c_p1, c_p2, c_p3 = st.columns(3)
-    p_choice = None
     with c_p1:
-        if st.button("FinTech 300-person GCC ➔"):
-            p_choice = "Which cities should a US fintech company consider for a 300-person GCC?"
+        if st.button("💳 FinTech 300-person GCC ➔", use_container_width=True):
+            st.session_state["research_prompt_input"] = "Which cities should a US fintech company consider for a 300-person GCC?"
+            st.session_state["trigger_agent_run"] = True
+            st.rerun()
     with c_p2:
-        if st.button("Chennai Functions & Tech ➔"):
-            p_choice = "Find GCCs in Chennai that have finance, engineering, or analytics functions."
+        if st.button("🏢 Chennai Tech & Functions ➔", use_container_width=True):
+            st.session_state["research_prompt_input"] = "Find GCCs in Chennai that have finance, engineering, or analytics functions."
+            st.session_state["trigger_agent_run"] = True
+            st.rerun()
     with c_p3:
-        if st.button("Tamil Nadu State Subsidies ➔"):
-            p_choice = "What state incentives might be relevant when establishing a GCC in Tamil Nadu?"
+        if st.button("📜 Tamil Nadu State Subsidies ➔", use_container_width=True):
+            st.session_state["research_prompt_input"] = "What state incentives might be relevant when establishing a GCC in Tamil Nadu?"
+            st.session_state["trigger_agent_run"] = True
+            st.rerun()
 
-    default_val = p_choice or st.session_state.get("active_research_query", "")
+    # Form with persistent input
+    with st.form("research_agent_form", clear_on_submit=False):
+        user_query_input = st.text_input(
+            "Enter strategic GCC inquiry:",
+            value=st.session_state.get("research_prompt_input", ""),
+            placeholder="e.g. Compare office leasing costs and state incentives between Hyderabad and Bengaluru..."
+        )
+        submit_clicked = st.form_submit_button("Execute Research Agent ➔", type="primary")
 
-    user_query = st.text_input(
-        "Enter strategic GCC inquiry:",
-        value=default_val,
-        placeholder="e.g. Compare office leasing costs and state incentives between Hyderabad and Bengaluru..."
-    )
+    # Determine execution trigger
+    should_run = False
+    query_to_execute = ""
 
-    if st.button("Execute Research Agent", type="primary") and user_query:
+    if submit_clicked and user_query_input.strip():
+        query_to_execute = user_query_input.strip()
+        st.session_state["research_prompt_input"] = query_to_execute
+        should_run = True
+    elif st.session_state.get("trigger_agent_run", False) and st.session_state.get("research_prompt_input", "").strip():
+        query_to_execute = st.session_state["research_prompt_input"].strip()
+        st.session_state["trigger_agent_run"] = False
+        should_run = True
+
+    if should_run and query_to_execute:
         active_key = get_gemini_api_key()
         if not active_key:
-            st.error("⚠️ GEMINI_API_KEY is missing. Please configure your key in the left sidebar.")
+            st.error("⚠️ GEMINI_API_KEY is missing. Please enter your API key in the field above or in the left sidebar to execute research.")
         else:
             with st.expander("⚙️ Agent Execution Graph & Audit Trail", expanded=True):
                 activity_container = st.container()
-                with st.spinner("Executing multi-step semantic retrieval & claim verification..."):
+                with st.spinner(f"Executing multi-step research on: '{query_to_execute}'..."):
                     agent = GCCIntelAgent()
-                    result = agent.run(user_query)
+                    result = agent.run(query_to_execute)
 
                 with activity_container:
-                    for step in result["status_log"]:
+                    for step in result.get("status_log", []):
                         st.markdown(f'<div class="agent-step">⚙️ {step}</div>', unsafe_allow_html=True)
 
-            if result.get("abstained"):
-                st.warning("⚠️ **Abstention Policy Active:** Data not found in audited knowledge base. Agent strictly refused to fabricate.")
-            elif result.get("is_supported"):
-                st.success("✓ **Fully Verified:** Claims audited and grounded against primary GCC Intel dossiers.")
+            # Store persistently in session state so results don't vanish on rerun
+            st.session_state["last_research_result"] = result
+            st.session_state["last_research_query"] = query_to_execute
 
-            st.markdown("### 📋 Executive Advisory Briefing")
-            st.markdown(result["final_answer"])
+    # Render persistent research dossier
+    if st.session_state.get("last_research_result"):
+        res = st.session_state["last_research_result"]
+        q_label = st.session_state.get("last_research_query", "Strategic Inquiry")
+
+        st.markdown("---")
+        st.markdown(f"### 📋 Strategic Advisory Dossier: *{q_label}*")
+
+        if res.get("abstained"):
+            st.warning("⚠️ **Abstention Policy Active:** Data not found in audited knowledge base. Agent strictly refused to fabricate.")
+        elif res.get("is_supported"):
+            st.success("✓ **Fully Verified:** Claims audited and grounded against primary GCC Intel dossiers.")
+
+        st.markdown(res.get("final_answer", ""))
 
 # -------------------------------------------------------------
 # 6. SERVICE PROVIDERS & EOR
