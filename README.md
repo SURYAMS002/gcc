@@ -2,10 +2,8 @@
 
 > **GCC Intel** is an AI-powered market intelligence platform engineered to help global enterprises, strategy advisors, and corporate expansion teams evaluate, establish, and scale Global Capability Centres (GCCs) across India's premier tech hubs.
 
-[![Live Streamlit App](https://img.shields.io/badge/Streamlit%20Cloud-Live%20Demo-38BDF8?style=for-the-badge&logo=streamlit)](https://finsight-rgedparqy6zxxjkca8yrgt.streamlit.app/)
-[![GitHub Repo](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github)](https://github.com/SURYAMS002/Finsight)
+[![GitHub Repo](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github)](https://github.com/SURYAMS002/gcc)
 
-🌐 **Live 24/7 Web Application:** [https://finsight-rgedparqy6zxxjkca8yrgt.streamlit.app/](https://finsight-rgedparqy6zxxjkca8yrgt.streamlit.app/)
 
 ---
 
