@@ -269,11 +269,14 @@ with st.sidebar:
     st.markdown("---")
     kpis = get_ecosystem_kpis()
     st.markdown(f"""
-    <div style="font-size: 0.76rem; color: #64748B; line-height: 1.5;">
+    <div style="font-size: 0.76rem; color: #64748B; line-height: 1.55;">
         <b>Audited GCCs:</b> {kpis['curated_gcc_count']} records<br>
         <b>Tracked Workforce:</b> {kpis['total_tracked_headcount']:,} employees<br>
         <b>Monitored Hubs:</b> 5 Tier-1 Metros<br>
-        <b>Verification Cycle:</b> October 2024 Audit
+        <b>Verification Cycle:</b> October 2024 Audit<br>
+        <hr style="margin: 8px 0; border: none; border-top: 1px solid #1E293B;">
+        🌐 <a href="https://cu5axikwdfpfurctzwhxtp.streamlit.app/" target="_blank" style="color: #38BDF8; text-decoration: none; font-weight: 600;">Live Cloud Terminal ↗</a><br>
+        💻 <a href="https://github.com/SURYAMS002/gcc" target="_blank" style="color: #94A3B8; text-decoration: none;">GitHub Source ↗</a>
     </div>
     """, unsafe_allow_html=True)
 
