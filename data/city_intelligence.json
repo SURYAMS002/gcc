@@ -1,0 +1,435 @@
+{
+  "cities": [
+    {
+      "id": "bengaluru",
+      "name": "Bengaluru",
+      "state": "Karnataka",
+      "tier": "Tier 1 Mega Hub",
+      "tagline": "The Silicon Valley of India & Global Tech Anchor",
+      "market_share_pct": 39.5,
+      "estimated_gcc_count": "550 - 600+",
+      "estimated_workforce": "650,000+",
+      "key_sectors": [
+        "Software & Cloud",
+        "BFSI Technology",
+        "Semiconductor & Hardware",
+        "Aerospace & Defence",
+        "Retail Tech & E-Commerce"
+      ],
+      "marquee_gccs": [
+        "Google India",
+        "Microsoft IDC",
+        "Boeing BIETC",
+        "Walmart Global Tech",
+        "Goldman Sachs",
+        "JPMorgan Chase",
+        "Target in India",
+        "Intel India",
+        "SAP Labs",
+        "Cisco"
+      ],
+      "real_estate": {
+        "grade_a_avg_rent_inr_sqft_mo": "85 - 125",
+        "prime_micromarkets": [
+          {"name": "Outer Ring Road (ORR)", "rent_range": "INR 95 - 130/sq.ft/mo", "vacancy_pct": "6.8%"},
+          {"name": "Whitefield", "rent_range": "INR 50 - 75/sq.ft/mo", "vacancy_pct": "12.4%"},
+          {"name": "Electronic City", "rent_range": "INR 45 - 65/sq.ft/mo", "vacancy_pct": "14.2%"},
+          {"name": "North Bengaluru (Airport Corridor)", "rent_range": "INR 65 - 85/sq.ft/mo", "vacancy_pct": "18.5%"}
+        ],
+        "source_id": "SRC-CBRE-OFFICE-2024",
+        "source_label": "CBRE Q2 2024 India Office Figures",
+        "data_type": "Verified Market Range"
+      },
+      "talent_benchmarks": {
+        "median_ctc_inr_lpa": {
+          "software_engineer_3_5_yrs": "14.0 - 24.0 LPA",
+          "data_scientist_ai_3_5_yrs": "16.0 - 28.0 LPA",
+          "finance_risk_analyst_3_5_yrs": "11.0 - 18.0 LPA",
+          "eng_director_manager_10_15_yrs": "45.0 - 75.0 LPA"
+        },
+        "talent_density_score": 9.8,
+        "attrition_rate_est": "14% - 18%",
+        "premier_institutions": ["IISc Bangalore", "IIM Bangalore", "IIIT Bangalore", "PES University", "RV College of Engineering"],
+        "source_id": "SRC-MICHAELPAGE-2024",
+        "data_type": "Industry Benchmark Range"
+      },
+      "state_policy": {
+        "policy_name": "Karnataka Dedicated GCC Policy 2024–2029",
+        "department": "Dept of Electronics, IT, Bt and S&T, Govt of Karnataka",
+        "key_incentives": [
+          "Reimbursement of lease rental up to INR 15/sq.ft/mo for 2 years in Beyond-Bengaluru clusters (Mysuru, Hubballi).",
+          "AI Co-Innovation Fund: Up to 50% matching grant (capped at INR 1 Cr) for joint R&D with academia.",
+          "100% electricity duty exemption for 5 years.",
+          "Patent filing reimbursement up to INR 10 Lakh for domestic and INR 25 Lakh for international patents.",
+          "INR 50,000 per female employee incentive for women workforce inclusion programs."
+        ],
+        "source_id": "SRC-KA-GOVT-POLICY",
+        "data_type": "Statutory Policy"
+      },
+      "infrastructure": {
+        "airport": "Kempegowda International Airport (BLR) - Terminal 2, connected to 30+ international hubs",
+        "metro": "Namma Metro Purple & Green lines operational; Blue line (Airport line) under active expansion",
+        "power_reliability": "Good in tech corridors (99.5% uptime in dedicated tech SEZs)",
+        "traffic_congestion_index": "High (ORR peak commute 60-90 mins)",
+        "source_label": "State Infrastructure Telemetry / NITI Aayog Urban Metrics"
+      },
+      "strategic_tradeoffs": {
+        "pros": [
+          "Deepest talent pool for GenAI, DeepTech, Chip design, and Enterprise SaaS globally outside Silicon Valley.",
+          "Unrivalled peer ecosystem — easily hire experienced engineering leadership and principal architects.",
+          "High investor confidence and mature vendor/partner supply chain."
+        ],
+        "cons": [
+          "High talent competition and salary inflation leading to elevated attrition (15-18%).",
+          "ORR traffic congestion increases employee commute friction.",
+          "Prime Grade-A commercial rentals are the highest among South Indian tech hubs."
+        ],
+        "recommended_for": "Global enterprises building Tier-1 engineering R&D, core platform IP, GenAI teams, and high-complexity innovation hubs."
+      }
+    },
+    {
+      "id": "hyderabad",
+      "name": "Hyderabad",
+      "state": "Telangana",
+      "tier": "Tier 1 Mega Hub",
+      "tagline": "The High-Velocity Mega Hub with Pro-Business Infrastructure",
+      "market_share_pct": 21.0,
+      "estimated_gcc_count": "280 - 320+",
+      "estimated_workforce": "320,000+",
+      "key_sectors": [
+        "BFSI & Fintech",
+        "Pharma & Healthcare R&D",
+        "Cloud Infrastructure",
+        "Enterprise Software",
+        "Semiconductor Design"
+      ],
+      "marquee_gccs": [
+        "Goldman Sachs",
+        "Novartis Corporate Center",
+        "Microsoft IDC",
+        "Amazon Development Centre",
+        "Wells Fargo",
+        "Qualcomm",
+        "ServiceNow",
+        "Bristol Myers Squibb",
+        "Micron Technology",
+        "State Street"
+      ],
+      "real_estate": {
+        "grade_a_avg_rent_inr_sqft_mo": "65 - 90",
+        "prime_micromarkets": [
+          {"name": "Hitec City / Madhapur", "rent_range": "INR 72 - 95/sq.ft/mo", "vacancy_pct": "11.2%"},
+          {"name": "Financial District / Gachibowli", "rent_range": "INR 65 - 88/sq.ft/mo", "vacancy_pct": "14.5%"},
+          {"name": "Kokapet / Neopolis", "rent_range": "INR 60 - 80/sq.ft/mo", "vacancy_pct": "22.0%"}
+        ],
+        "source_id": "SRC-CBRE-OFFICE-2024",
+        "source_label": "CBRE Q2 2024 India Office Figures",
+        "data_type": "Verified Market Range"
+      },
+      "talent_benchmarks": {
+        "median_ctc_inr_lpa": {
+          "software_engineer_3_5_yrs": "12.0 - 20.0 LPA",
+          "data_scientist_ai_3_5_yrs": "14.0 - 24.0 LPA",
+          "finance_risk_analyst_3_5_yrs": "10.0 - 16.0 LPA",
+          "eng_director_manager_10_15_yrs": "40.0 - 65.0 LPA"
+        },
+        "talent_density_score": 9.1,
+        "attrition_rate_est": "11% - 14%",
+        "premier_institutions": ["IIT Hyderabad", "IIIT Hyderabad", "ISB (Indian School of Business)", "BITS Pilani Hyderabad", "Osmania University"],
+        "source_id": "SRC-MICHAELPAGE-2024",
+        "data_type": "Industry Benchmark Range"
+      },
+      "state_policy": {
+        "policy_name": "Telangana ICT Policy & TS-iPASS Single Window Act",
+        "department": "Information Technology, Electronics & Communications Dept, Govt of Telangana",
+        "key_incentives": [
+          "TS-iPASS statutory single-window clearance: Approvals mandated within 15-30 days, else deemed approved.",
+          "100% reimbursement of stamp duty and transfer duty paid on purchase/lease of land/office.",
+          "Power tariff subsidy of INR 1.00 per unit for 3 years.",
+          "Recruitment assistance subsidy of INR 20,000 per local employee hired.",
+          "Dedicated Mega Project incentives for GCCs creating >1,000 jobs."
+        ],
+        "source_id": "SRC-TS-GOVT-POLICY",
+        "data_type": "Statutory Policy"
+      },
+      "infrastructure": {
+        "airport": "Rajiv Gandhi International Airport (HYD) - 158-km Outer Ring Road enables 30-40 min airport commute from Financial District",
+        "metro": "Hyderabad Metro operational across 69 km; Phase 2 expansion to airport planned",
+        "power_reliability": "Excellent (dedicated 24x7 industrial power feeders in Cyberabad)",
+        "traffic_congestion_index": "Moderate (superior arterial flyovers and 8-lane ORR expressway)",
+        "source_label": "State Infrastructure Telemetry / NITI Aayog Urban Metrics"
+      },
+      "strategic_tradeoffs": {
+        "pros": [
+          "World-class civic infrastructure with 8-lane Outer Ring Road and minimal traffic choke points compared to Bengaluru.",
+          "Aggressive, highly responsive bureaucratic support via TS-iPASS single-window clearances.",
+          "Commercial real estate is 15-25% more affordable than Bengaluru ORR with abundant supply in Kokapet."
+        ],
+        "cons": [
+          "Slightly smaller immediate talent depth in super-niche deep-tech hardware compared to Bengaluru.",
+          "Summer temperatures reach peak levels (April-May)."
+        ],
+        "recommended_for": "Fintech & Wall Street banking operations, Life Sciences/Pharma IT, Cloud Scale engineering, and fast-growing 500+ head count centres."
+      }
+    },
+    {
+      "id": "chennai",
+      "name": "Chennai",
+      "state": "Tamil Nadu",
+      "tier": "Tier 1 Mega Hub",
+      "tagline": "The Engineering & Hardware Capital of South Asia",
+      "market_share_pct": 13.5,
+      "estimated_gcc_count": "170 - 200+",
+      "estimated_workforce": "210,000+",
+      "key_sectors": [
+        "Automotive & Electric Mobility R&D",
+        "BFSI Back-Office & Tech",
+        "Healthcare & Life Sciences IT",
+        "Hardware & Electronics Engineering",
+        "Maritime & Supply Chain Tech"
+      ],
+      "marquee_gccs": [
+        "Standard Chartered GBS",
+        "Ford Business Solutions",
+        "AstraZeneca GITC",
+        "Amazon Development Centre",
+        "PayPal India",
+        "Bank of America",
+        "Citigroup Service Center",
+        "Renault-Nissan Technology",
+        "Caterpillar",
+        "Hitachi Energy"
+      ],
+      "real_estate": {
+        "grade_a_avg_rent_inr_sqft_mo": "55 - 80",
+        "prime_micromarkets": [
+          {"name": "Old Mahabalipuram Road (OMR) Pre-Toll", "rent_range": "INR 65 - 88/sq.ft/mo", "vacancy_pct": "8.5%"},
+          {"name": "Guindy / Mount Poonamallee", "rent_range": "INR 65 - 90/sq.ft/mo", "vacancy_pct": "7.2%"},
+          {"name": "OMR Post-Toll (Sholinganallur/Siruseri)", "rent_range": "INR 42 - 60/sq.ft/mo", "vacancy_pct": "16.8%"},
+          {"name": "Ambattur", "rent_range": "INR 40 - 55/sq.ft/mo", "vacancy_pct": "15.0%"}
+        ],
+        "source_id": "SRC-CBRE-OFFICE-2024",
+        "source_label": "CBRE Q2 2024 India Office Figures",
+        "data_type": "Verified Market Range"
+      },
+      "talent_benchmarks": {
+        "median_ctc_inr_lpa": {
+          "software_engineer_3_5_yrs": "10.0 - 18.0 LPA",
+          "data_scientist_ai_3_5_yrs": "12.0 - 22.0 LPA",
+          "finance_risk_analyst_3_5_yrs": "9.0 - 15.0 LPA",
+          "eng_director_manager_10_15_yrs": "36.0 - 58.0 LPA"
+        },
+        "talent_density_score": 8.7,
+        "attrition_rate_est": "8% - 11%",
+        "premier_institutions": ["IIT Madras", "Anna University (CEG)", "Loyola College", "Madras Christian College", "SRM Institute of Science and Technology"],
+        "source_id": "SRC-MICHAELPAGE-2024",
+        "data_type": "Industry Benchmark Range"
+      },
+      "state_policy": {
+        "policy_name": "Tamil Nadu R&D and Global Capability Centres Policy 2022",
+        "department": "Guidance Tamil Nadu / Industries Dept, Govt of Tamil Nadu",
+        "key_incentives": [
+          "R&D / GCC Training Subsidy: Reimbursement of up to INR 6,000/employee/month for 12 months.",
+          "50% stamp duty exemption on long-term lease or purchase of land/office premises.",
+          "Intellectual Property Grant: 50% patent filing fee reimbursement up to INR 25 Lakh.",
+          "Anchor Unit Capital Subsidy: Up to 25% subsidy for major initial investments in Tier-2/3 extensions.",
+          "Electricity duty waiver for 5 years."
+        ],
+        "source_id": "SRC-TN-GOVT-POLICY",
+        "data_type": "Statutory Policy"
+      },
+      "infrastructure": {
+        "airport": "Chennai International Airport (MAA) - Metro directly connects Airport terminal to Guindy and CBD",
+        "metro": "Phase 1 operational across 54 km; Phase 2 (116 km, 3 corridors) under advanced construction with OMR line",
+        "power_reliability": "Very High (TANGEDCO dedicated industrial grid)",
+        "traffic_congestion_index": "Moderate (OMR elevated corridor & metro work causing localized peak slowdown)",
+        "source_label": "Guidance Tamil Nadu / Urban Mobility Board"
+      },
+      "strategic_tradeoffs": {
+        "pros": [
+          "Lowest attrition rate (8-11%) among all Tier-1 Indian tech cities, providing strong team stability and retention.",
+          "Unmatched embedded hardware, automotive engineering, and mechanical/embedded software talent from IIT Madras and Anna University.",
+          "Real estate and salary costs are 20-30% lower than Bengaluru, delivering massive operating leverage."
+        ],
+        "cons": [
+          "Slightly slower lateral hiring speed for cutting-edge consumer-tech product management.",
+          "Hot and humid weather during peak summer (May-June)."
+        ],
+        "recommended_for": "Automotive & Electric Vehicle R&D, Industrial Automation, Life Sciences Clinical Data, Maritime/Supply Chain, and Stable Long-term BFSI Technology."
+      }
+    },
+    {
+      "id": "pune",
+      "name": "Pune",
+      "state": "Maharashtra",
+      "tier": "Tier 1 Established Hub",
+      "tagline": "The R&D and Product Engineering Engine of Western India",
+      "market_share_pct": 11.5,
+      "estimated_gcc_count": "150 - 180+",
+      "estimated_workforce": "180,000+",
+      "key_sectors": [
+        "Automotive Engineering & IoT",
+        "Industrial Manufacturing Tech",
+        "Financial Services & Risk",
+        "Enterprise Software",
+        "Telecom R&D"
+      ],
+      "marquee_gccs": [
+        "Barclays Global Service Centre",
+        "Deutsche Bank Technology",
+        "Credit Suisse / UBS",
+        "Siemens Technology",
+        "Mercedes-Benz R&D",
+        "Mastercard India Tech Hub",
+        "BNY Mellon",
+        "Cummins India Tech",
+        "Whirlpool Global Tech",
+        "John Deere"
+      ],
+      "real_estate": {
+        "grade_a_avg_rent_inr_sqft_mo": "60 - 85",
+        "prime_micromarkets": [
+          {"name": "Hinjewadi (Phases 1, 2, 3)", "rent_range": "INR 50 - 70/sq.ft/mo", "vacancy_pct": "14.8%"},
+          {"name": "Kharadi", "rent_range": "INR 70 - 95/sq.ft/mo", "vacancy_pct": "7.5%"},
+          {"name": "Viman Nagar / Magarpatta", "rent_range": "INR 68 - 88/sq.ft/mo", "vacancy_pct": "9.2%"}
+        ],
+        "source_id": "SRC-CBRE-OFFICE-2024",
+        "source_label": "CBRE Q2 2024 India Office Figures",
+        "data_type": "Verified Market Range"
+      },
+      "talent_benchmarks": {
+        "median_ctc_inr_lpa": {
+          "software_engineer_3_5_yrs": "11.0 - 19.0 LPA",
+          "data_scientist_ai_3_5_yrs": "13.0 - 23.0 LPA",
+          "finance_risk_analyst_3_5_yrs": "10.0 - 16.0 LPA",
+          "eng_director_manager_10_15_yrs": "38.0 - 62.0 LPA"
+        },
+        "talent_density_score": 8.5,
+        "attrition_rate_est": "10% - 13%",
+        "premier_institutions": ["College of Engineering Pune (COEP)", "Symbiosis International University", "Pune Institute of Computer Technology (PICT)", "MIT World Peace University"],
+        "source_id": "SRC-MICHAELPAGE-2024",
+        "data_type": "Industry Benchmark Range"
+      },
+      "state_policy": {
+        "policy_name": "Maharashtra IT/ITES Policy 2023",
+        "department": "Industries, Energy and Labour Dept, Govt of Maharashtra",
+        "key_incentives": [
+          "100% stamp duty exemption for IT/ITES units on lease or sale agreements.",
+          "Electricity duty waiver for 10-15 years based on employment tier.",
+          "Power tariff subsidy of INR 1-2 per unit for 3-5 years.",
+          "Property tax benefits at residential rates rather than commercial rates in municipal zones.",
+          "Dedicated R&D patent assistance up to INR 10 Lakh per approved patent."
+        ],
+        "source_id": "SRC-MH-GOVT-POLICY",
+        "data_type": "Statutory Policy"
+      },
+      "infrastructure": {
+        "airport": "Pune Airport (PNQ) - New integrated terminal operational; Mumbai Airport (BOM) accessible via 3-hour Expressway",
+        "metro": "Pune Metro Line 1 & Line 2 operational across 33 km; Hinjewadi-Shivajinagar Line 3 underway",
+        "power_reliability": "Good (MSEDCL industrial feeds with high UPS/generator backup standard in parks)",
+        "traffic_congestion_index": "Moderate to High (Hinjewadi junction bottlenecks during peak rush)",
+        "source_label": "MIDC / MahaMetro Reports"
+      },
+      "strategic_tradeoffs": {
+        "pros": [
+          "Close proximity to Mumbai's financial capital, making it easy to tap senior leadership and institutional clients.",
+          "Exceptional engineering culture with 100+ colleges graduating 50,000+ engineers annually.",
+          "Pleasant year-round climate and vibrant student/young-professional lifestyle."
+        ],
+        "cons": [
+          "Limited direct long-haul international flights from Pune Airport (many executives transit via Mumbai).",
+          "Hinjewadi tech corridor traffic during peak morning and evening shifts."
+        ],
+        "recommended_for": "Automotive R&D, Heavy Engineering Software, European/UK Financial Services tech back-offices, and IoT/Industrial 4.0 platforms."
+      }
+    },
+    {
+      "id": "gurugram",
+      "name": "Gurugram",
+      "region": "Delhi-NCR",
+      "state": "Haryana",
+      "tier": "Tier 1 Mega Hub",
+      "tagline": "The Corporate HQ, FinTech & Strategic Operations Nexus",
+      "market_share_pct": 14.5,
+      "estimated_gcc_count": "200 - 230+",
+      "estimated_workforce": "260,000+",
+      "key_sectors": [
+        "Consulting & Knowledge Services",
+        "FinTech & Risk Analytics",
+        "Consumer Tech & Logistics",
+        "Telecom & Networks",
+        "Healthcare Operations"
+      ],
+      "marquee_gccs": [
+        "American Express India",
+        "Fidelity International",
+        "NatWest Group",
+        "Boston Consulting Group",
+        "Deloitte USI",
+        "PwC Acceleration Centers",
+        "EY Global Delivery Services",
+        "Optum / UnitedHealth Group",
+        "Ericsson Global",
+        "Mondelez International"
+      ],
+      "real_estate": {
+        "grade_a_avg_rent_inr_sqft_mo": "80 - 135",
+        "prime_micromarkets": [
+          {"name": "DLF Cyber City", "rent_range": "INR 125 - 165/sq.ft/mo", "vacancy_pct": "4.5%"},
+          {"name": "Golf Course Road", "rent_range": "INR 130 - 180/sq.ft/mo", "vacancy_pct": "5.2%"},
+          {"name": "Golf Course Extension Road", "rent_range": "INR 75 - 105/sq.ft/mo", "vacancy_pct": "16.5%"},
+          {"name": "Sohna Road / NH-48", "rent_range": "INR 55 - 75/sq.ft/mo", "vacancy_pct": "19.0%"}
+        ],
+        "source_id": "SRC-CBRE-OFFICE-2024",
+        "source_label": "CBRE Q2 2024 India Office Figures",
+        "data_type": "Verified Market Range"
+      },
+      "talent_benchmarks": {
+        "median_ctc_inr_lpa": {
+          "software_engineer_3_5_yrs": "13.0 - 22.0 LPA",
+          "data_scientist_ai_3_5_yrs": "15.0 - 26.0 LPA",
+          "finance_risk_analyst_3_5_yrs": "12.0 - 20.0 LPA",
+          "eng_director_manager_10_15_yrs": "42.0 - 70.0 LPA"
+        },
+        "talent_density_score": 9.0,
+        "attrition_rate_est": "13% - 17%",
+        "premier_institutions": ["IIT Delhi (accessible)", "MDI Gurgaon", "Faculty of Management Studies (FMS)", "Delhi Technological University (DTU)", "Ashoka University"],
+        "source_id": "SRC-MICHAELPAGE-2024",
+        "data_type": "Industry Benchmark Range"
+      },
+      "state_policy": {
+        "policy_name": "Haryana IT & ESDM Policy 2023",
+        "department": "Dept of IT, Electronics & Communication, Govt of Haryana",
+        "key_incentives": [
+          "Employment Generation Subsidy: Up to INR 48,000 per employee per year for 5 years.",
+          "100% exemption from electricity duty for a period of 10 years.",
+          "50% reimbursement of stamp duty on lease/sale agreements for IT space.",
+          "Special incentives for green data centres and solar captive power units.",
+          "Fast-track clearance through Haryana Enterprise Promotion Centre (HEPC)."
+        ],
+        "source_id": "SRC-HR-GOVT-POLICY",
+        "data_type": "Statutory Policy"
+      },
+      "infrastructure": {
+        "airport": "Indira Gandhi International Airport (DEL) - Just 15-25 minutes from DLF Cyber City via NH-48 expressway",
+        "metro": "Delhi Metro Yellow Line & Rapid Metro Gurgaon connect key commercial hubs",
+        "power_reliability": "Requires 100% backup (diesel gensets/captive systems standard across all Grade A parks)",
+        "traffic_congestion_index": "High (NH-48 / Cyber Hub peak rush hour)",
+        "source_label": "Haryana Enterprise Promotion Board"
+      },
+      "strategic_tradeoffs": {
+        "pros": [
+          "Best international airport connectivity in South Asia (DEL has direct flights to all major North American and European hubs).",
+          "Unmatched talent in strategy, consulting, corporate finance, risk modelling, and legal advisory.",
+          "Proximity to central ministries, embassies, regulatory bodies, and North India enterprise headquarters."
+        ],
+        "cons": [
+          "Air quality and environmental index dip during winter months (November-January).",
+          "Premium Grade-A office rents in Cyber City and Golf Course Road are the highest in NCR.",
+          "Requires reliable captive backup power infrastructure."
+        ],
+        "recommended_for": "Global Banking & Risk Analytics, Strategy & Shared Services, Management Consulting Knowledge Centres, and Global Supply Chain Headquarters."
+      }
+    }
+  ]
+}

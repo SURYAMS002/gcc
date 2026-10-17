@@ -1,0 +1,10 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+*.pkl
+*.pdf
+data/*.pdf
+faiss_store*/
+faiss_test_store/
+scratch/

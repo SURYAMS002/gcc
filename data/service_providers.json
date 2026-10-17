@@ -1,0 +1,139 @@
+[
+  {
+    "id": "SP-001",
+    "name": "ANSR",
+    "category": "Strategy & Market-Entry Consulting",
+    "sub_category": "End-to-End GCC Design, Setup & Managed Incubation",
+    "headquarters": "Bengaluru, Karnataka",
+    "locations_served": ["Bengaluru", "Hyderabad", "Chennai", "Pune", "Delhi-NCR", "Mumbai"],
+    "services_offered": [
+      "GCC Strategy & Location Selection",
+      "Talent Acquisition & Employer Branding",
+      "Turnkey Workspace Design & Fit-out",
+      "Legal Entity Incorporation & Compliance",
+      "Managed Operations & Digital Infrastructure"
+    ],
+    "documented_track_record": "Established over 110+ GCCs in India, managing 100,000+ GCC professionals for global Fortune 500 enterprises including Target, Lowe's, Delta Air Lines, and Wells Fargo.",
+    "source_url": "https://ansr.com/",
+    "verification_status": "Verified Partner Profile"
+  },
+  {
+    "id": "SP-002",
+    "name": "Zinnov",
+    "category": "Strategy & Market-Entry Consulting",
+    "sub_category": "Management Consulting & Global Sourcing Advisory",
+    "headquarters": "Bengaluru, Karnataka & Santa Clara, USA",
+    "locations_served": ["Bengaluru", "Hyderabad", "Pune", "Chennai", "NCR"],
+    "services_offered": [
+      "GCC Feasibility Studies & Peer Benchmarking",
+      "Engineering & R&D Capability Maturity Assessments",
+      "Compensation & Talent Hotspot Analysis",
+      "Cost-of-Operations Modeling"
+    ],
+    "documented_track_record": "Advises 70% of Fortune 500 GCCs operating in India; co-author of annual NASSCOM-Zinnov India GCC Landscape reports.",
+    "source_url": "https://zinnov.com/",
+    "verification_status": "Verified Partner Profile"
+  },
+  {
+    "id": "SP-003",
+    "name": "EY India (Ernst & Young) GCC Practice",
+    "category": "Strategy & Market-Entry Consulting",
+    "sub_category": "Big-4 Strategy, Tax, TP & Regulatory Advisory",
+    "headquarters": "Gurugram, Haryana / London, UK",
+    "locations_served": ["Gurugram", "Bengaluru", "Mumbai", "Hyderabad", "Chennai", "Pune"],
+    "services_offered": [
+      "Transfer Pricing (TP) Documentation & Safe Harbour Advisory",
+      "Corporate Tax Structuring & SEZ/STPI Compliance",
+      "Cybersecurity, Privacy & RBI Cross-Border Regulatory Review",
+      "Digital Transformation Roadmap"
+    ],
+    "documented_track_record": "Supported establishment of 150+ GCCs in India with comprehensive tax rulings, APA (Advance Pricing Agreement) filings, and audit readiness.",
+    "source_url": "https://www.ey.com/en_in/services/global-capability-centers",
+    "verification_status": "Verified Partner Profile"
+  },
+  {
+    "id": "SP-004",
+    "name": "CBRE South Asia",
+    "category": "Commercial Real Estate",
+    "sub_category": "Advisory & Transaction Services, Project Management",
+    "headquarters": "Gurugram, Haryana / Dallas, Texas, USA",
+    "locations_served": ["Bengaluru", "Hyderabad", "Chennai", "Pune", "Delhi-NCR", "Mumbai", "Kolkata"],
+    "services_offered": [
+      "Grade-A Tech Park Site Selection & Lease Negotiations",
+      "Workplace Strategy & Space Planning",
+      "Design & Project Fit-out Management",
+      "Green Building (LEED/WELL) Certification Advisory"
+    ],
+    "documented_track_record": "Transacted over 40 million sq. ft. of commercial space for GCCs over the past five years across Bengaluru, Hyderabad, and Chennai.",
+    "source_url": "https://www.cbre.co.in/",
+    "verification_status": "Verified Partner Profile"
+  },
+  {
+    "id": "SP-005",
+    "name": "JLL India (Jones Lang LaSalle)",
+    "category": "Commercial Real Estate",
+    "sub_category": "Commercial Brokerage & Workplace Solutions",
+    "headquarters": "Mumbai, Maharashtra / Chicago, Illinois, USA",
+    "locations_served": ["Bengaluru", "Hyderabad", "Chennai", "Pune", "NCR", "Mumbai"],
+    "services_offered": [
+      "GCC Micro-Market Feasibility & Commercial Leasing",
+      "Tenant Representation & Rent Re-negotiation",
+      "Facilities & Property Management",
+      "Flex-Space / Managed Office Transition"
+    ],
+    "documented_track_record": "Advised marquee tech and BFSI GCCs on flagship campus acquisitions in Bengaluru Outer Ring Road and Hyderabad Financial District.",
+    "source_url": "https://www.jll.co.in/",
+    "verification_status": "Verified Partner Profile"
+  },
+  {
+    "id": "SP-006",
+    "name": "Shardul Amarchand Mangaldas & Co. (SAM)",
+    "category": "Legal & Regulatory Services",
+    "sub_category": "Corporate Law, Labour Laws, Cross-Border IP",
+    "headquarters": "New Delhi / Mumbai, India",
+    "locations_served": ["New Delhi / Gurugram", "Bengaluru", "Mumbai", "Chennai", "Hyderabad"],
+    "services_offered": [
+      "Foreign Direct Investment (FDI) & Reserve Bank of India (RBI) Clearances",
+      "Employment Contracts, Non-Competes & Indian Labour Code Compliance",
+      "Cross-Border Intellectual Property Assignment Agreements",
+      "Data Protection Act (DPDP Act 2023) Compliance"
+    ],
+    "documented_track_record": "India's premier Tier-1 law firm; counsel to dozens of Fortune 100 multinationals structuring Indian subsidiary entities and cross-border tech licensing.",
+    "source_url": "https://www.amsshardul.com/",
+    "verification_status": "Verified Partner Profile"
+  },
+  {
+    "id": "SP-007",
+    "name": "Michael Page India",
+    "category": "Recruitment & Executive Search",
+    "sub_category": "Specialized Tech, Finance & GCC Leadership Hiring",
+    "headquarters": "Mumbai / Gurugram / Bengaluru, India",
+    "locations_served": ["Bengaluru", "Hyderabad", "Chennai", "Pune", "Delhi-NCR", "Mumbai"],
+    "services_offered": [
+      "GCC Managing Director & VP Engineering Search",
+      "Niche DeepTech & AI/ML Talent Mapping",
+      "Compensation Benchmarking & Talent Heatmaps",
+      "Rapid Volume Tech Ramp-up"
+    ],
+    "documented_track_record": "Placed 1,200+ GCC leaders and directors across India; author of the annual India Talent Trends & GCC Salary Benchmark report.",
+    "source_url": "https://www.michaelpage.co.in/",
+    "verification_status": "Verified Partner Profile"
+  },
+  {
+    "id": "SP-008",
+    "name": "Deel India",
+    "category": "Payroll & Employer of Record (EOR)",
+    "sub_category": "Global EOR & Compliant Talent Incubation",
+    "headquarters": "San Francisco, USA / Bengaluru, India",
+    "locations_served": ["Pan-India (Remote, Hybrid, On-site)"],
+    "services_offered": [
+      "Employer of Record (hire Indian talent without a local legal entity)",
+      "Automated Indian Payroll, PF, ESI, TDS & Gratuity Filing",
+      "Statutory Benefits & Insurance Administration",
+      "Entity Setup Transition Support"
+    ],
+    "documented_track_record": "Empowers fast-growing tech companies to bootstrap initial 10-50 member India engineering teams in days before establishing a full wholly-owned subsidiary.",
+    "source_url": "https://www.deel.com/",
+    "verification_status": "Verified Partner Profile"
+  }
+]
