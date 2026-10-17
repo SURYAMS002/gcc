@@ -390,25 +390,26 @@ def create_deck():
     # -------------------------------------------------------------------------
     s11 = prs.slides.add_slide(blank_layout)
     apply_background(s11)
-    add_header(s11, "PRODUCT ROADMAP", "6-Month Strategic Horizon: From MVP to Enterprise Standard")
+    add_header(s11, "PRODUCT ROADMAP", "Strategic Execution Horizon: From Live MVP to Enterprise Scale")
 
-    add_card(s11, 0.8, 1.8, 3.6, 5.0, "Phase 1: Foundation (Month 1)", [
-        "STATUS: LIVE & DEPLOYED.",
+    add_card(s11, 0.8, 1.8, 3.6, 5.0, "Current MVP (Ready Now)", [
+        "STATUS: LIVE & 100% OPERATIONAL.",
+        "Built and launched rapidly as an evaluation-ready platform.",
         "32 Audited GCC Profiles with primary source citations.",
-        "5 Tier-1 Metros comparative matrix.",
+        "5 Tier-1 Metros comparative intelligence matrix.",
         "Interactive OpEx & Location Setup Modeler.",
         "LangGraph multi-step research agent.",
         "Live on Streamlit Cloud & GitHub."
     ], ACCENT_GREEN, ACCENT_GREEN)
 
-    add_card(s11, 4.8, 1.8, 3.6, 5.0, "Phase 2: Tier-2 Hubs (Months 2-3)", [
+    add_card(s11, 4.8, 1.8, 3.6, 5.0, "Phase 1: Tier-2 Hubs (Months 1-2)", [
         "Expand to Tier-2 Emerging GCC Hubs: Kochi, Ahmedabad, Coimbatore, Chandigarh, Jaipur.",
         "EOR vs. Captive Cost Trade-Off Simulator.",
         "Commercial Real Estate API Integration for live vacancy feeds.",
         "Automated PDF Executive Board Briefing generator."
     ], BORDER_BLUE, ACCENT_CYAN)
 
-    add_card(s11, 8.8, 1.8, 3.7, 5.0, "Phase 3: Enterprise Platform (Months 4-6)", [
+    add_card(s11, 8.8, 1.8, 3.7, 5.0, "Phase 2: Enterprise Scale (Months 3-6)", [
         "Real-Time Talent Scraper & Attrition Tracker by micro-market.",
         "Enterprise Multi-Tenant Workspaces with SSO & Team Sharing.",
         "Partner Marketplace & Request-for-Proposal (RFP) Workflow.",
