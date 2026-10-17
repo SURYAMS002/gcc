@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCC Intel — Product Strategy Deck (Deliverable 1)</title>
+    <style>
+        :root {
+            --bg-dark: #080C14;
+            --card-bg: #0E1626;
+            --accent-cyan: #38BDF8;
+            --accent-green: #10B981;
+            --accent-amber: #F59E0B;
+            --accent-purple: #A855F7;
+            --text-white: #F8FAFC;
+            --text-muted: #94A3B8;
+            --border-blue: #22324F;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: #030712;
+            color: var(--text-white);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+
+        /* Top Controls Bar */
+        .controls-bar {
+            position: sticky;
+            top: 10px;
+            z-index: 1000;
+            background: rgba(14, 22, 38, 0.9);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--border-blue);
+            border-radius: 40px;
+            padding: 8px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+        }
+
+        .controls-bar button {
+            background-color: #1E293B;
+            border: 1px solid #334155;
+            color: var(--text-white);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .controls-bar button:hover {
+            background-color: var(--accent-cyan);
+            color: #080C14;
+            border-color: var(--accent-cyan);
+        }
+
+        .controls-bar button.print-btn {
+            background-color: var(--accent-cyan);
+            color: #080C14;
+            border-color: var(--accent-cyan);
+        }
+
+        .controls-bar button.print-btn:hover {
+            background-color: #0284C7;
+            color: #FFFFFF;
+        }
+
+        .slide-counter {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* Slide Container */
+        .deck-wrapper {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            padding: 0 16px;
+        }
+
+        /* Individual 16:9 Slide */
+        .slide {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: linear-gradient(135deg, #090E1A 0%, #0F172A 100%);
+            border: 1px solid var(--border-blue);
+            border-radius: 12px;
+            padding: 44px 52px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+            overflow: hidden;
+        }
+
+        /* Header Elements */
+        .slide-category {
+            font-size: 0.72rem;
+            font-weight: 750;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--accent-cyan);
+            margin-bottom: 6px;
+        }
+
+        .slide-title {
+            font-size: 1.85rem;
+            font-weight: 800;
+            color: var(--text-white);
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+            margin-bottom: 24px;
+        }
+
+        /* Grid Layouts */
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            flex: 1;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            flex: 1;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            flex: 1;
+        }
+
+        /* Card Elements */
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-blue);
+            border-radius: 10px;
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            border-top: 3px solid var(--accent-cyan);
+        }
+
+        .card.emerald { border-top-color: var(--accent-green); }
+        .card.amber { border-top-color: var(--accent-amber); }
+        .card.purple { border-top-color: var(--accent-purple); }
+
+        .card-title {
+            font-size: 1.15rem;
+            font-weight: 750;
+            color: var(--text-white);
+            margin-bottom: 12px;
+        }
+
+        .card-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .card-list li {
+            position: relative;
+            padding-left: 18px;
+        }
+
+        .card-list li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--accent-cyan);
+            font-weight: bold;
+        }
+
+        .card.emerald .card-list li::before { color: var(--accent-green); }
+        .card.amber .card-list li::before { color: var(--accent-amber); }
+
+        /* Slide Footer */
+        .slide-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #1E293B;
+            padding-top: 14px;
+            margin-top: 16px;
+            font-size: 0.75rem;
+            color: #64748B;
+        }
+
+        .slide-footer a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+        }
+
+        /* Title Slide Custom */
+        .slide-title-hero {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100%;
+            padding: 0 40px;
+        }
+
+        .hero-badge {
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid var(--accent-cyan);
+            color: var(--accent-cyan);
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 18px;
+        }
+
+        .hero-main-title {
+            font-size: 2.8rem;
+            font-weight: 850;
+            color: #FFFFFF;
+            letter-spacing: -1px;
+            line-height: 1.15;
+            margin-bottom: 12px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--accent-cyan);
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .hero-desc {
+            font-size: 1.05rem;
+            color: var(--text-muted);
+            max-width: 850px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .hero-meta {
+            display: flex;
+            gap: 24px;
+            font-size: 0.88rem;
+            color: #CBD5E1;
+        }
+
+        .hero-meta b {
+            color: var(--text-white);
+        }
+
+        /* Print Media Styles for Clean PDF Export */
+        @media print {
+            body {
+                background: none;
+                padding: 0;
+            }
+            .controls-bar {
+                display: none;
+            }
+            .deck-wrapper {
+                max-width: 100%;
+                gap: 0;
+                padding: 0;
+            }
+            .slide {
+                aspect-ratio: 16 / 9;
+                width: 100vw;
+                height: 100vh;
+                page-break-after: always;
+                border: none;
+                border-radius: 0;
+                box-shadow: none;
+                padding: 40px 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Controls Bar -->
+    <div class="controls-bar">
+        <span style="font-weight: 700; font-size: 0.9rem; color: #F8FAFC;">GCC INTEL</span>
+        <span class="slide-counter">Deliverable 1: Product Strategy Deck (13 Slides)</span>
+        <button class="print-btn" onclick="window.print()">🖨️ Export / Print to PDF</button>
+        <button onclick="window.open('https://cu5axikwdfpfurctzwhxtp.streamlit.app/', '_blank')">🌐 Live App</button>
+        <button onclick="window.open('https://github.com/SURYAMS002/gcc', '_blank')">💻 GitHub</button>
+    </div>
+
+    <div class="deck-wrapper">
+
+        <!-- SLIDE 1: Title Slide -->
+        <section class="slide" id="slide-1">
+            <div class="slide-title-hero">
+                <span class="hero-badge">FLEXIPLE PRODUCT INTERNSHIP EVALUATION</span>
+                <h1 class="hero-main-title">GCC INTEL</h1>
+                <div class="hero-subtitle">India's AI-Powered Market Intelligence & Location Advisory Terminal</div>
+                <p class="hero-desc">
+                    Transforming multi-million dollar enterprise expansion decisions with audited GCC records, 
+                    real-time OpEx simulation, and zero-hallucination agentic RAG.
+                </p>
+                <div class="hero-meta">
+                    <div><b>Author:</b> Suryam S</div>
+                    <div><b>Deliverable:</b> Product Strategy Deck (PPT/PDF)</div>
+                    <div><b>Live Platform:</b> <a href="https://cu5axikwdfpfurctzwhxtp.streamlit.app/" target="_blank" style="color: #38BDF8;">cu5axikwdfpfurctzwhxtp.streamlit.app</a></div>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>CONFIDENTIAL & PROPRIETARY — PREPARED FOR FLEXIPLE</span>
+                <span>SLIDE 01 / 13</span>
+            </div>
+        </section>
+
+        <!-- SLIDE 2: Executive Summary -->
+        <section class="slide" id="slide-2">
+            <div>
+                <div class="slide-category">EXECUTIVE SUMMARY</div>
+                <h2 class="slide-title">Strategic Overview: Solving the $50M Enterprise Dilemma</h2>
+            </div>
+            <div class="grid-3">
+                <div class="card">
+                    <div class="card-title">1. The Macro Shift</div>
+                    <ul class="card-list">
+                        <li>India is undergoing a structural shift from back-office cost arbitrage to strategic global transformation engines (GCC 4.0).</li>
+                        <li>Over 1,900 operational GCCs employ 1.9M+ professionals, generating $64.6B in direct economic value.</li>
+                        <li>Scaling toward 2,500+ GCCs and $100B+ economic output by 2030.</li>
+                        <li>Average enterprise center setup represents $15M–$50M+ in capital and multi-year lease commitments.</li>
+                    </ul>
+                </div>
+                <div class="card amber">
+                    <div class="card-title">2. The Critical Friction</div>
+                    <ul class="card-list">
+                        <li>Strategic decision-makers navigate fragmented, conflicting reports and opaque real estate broker averages.</li>
+                        <li>Corporate press releases routinely conflate aspirational 5-year targets with actual ground-level operational staff.</li>
+                        <li>Key statutory state subsidies (Karnataka 2024, TN 2022, Telangana TS-iPASS) remain locked in state gazettes.</li>
+                        <li>Standard conversational AI models hallucinate office locations, invent salaries, and cite dead links.</li>
+                    </ul>
+                </div>
+                <div class="card emerald">
+                    <div class="card-title">3. The GCC Intel Solution</div>
+                    <ul class="card-list">
+                        <li><b>Audited Enterprise Registry:</b> 32 marquee GCC case files across 5 hubs and 8 industries with 100% verified source provenance.</li>
+                        <li><b>Location OpEx Modeler:</b> Real-time parametric simulation of Grade-A leases, base engineering payroll, and state grants.</li>
+                        <li><b>LangGraph Verifiable RAG:</b> Multi-node audit pipeline with FAISS vector retrieval and zero-hallucination abstention.</li>
+                        <li><b>Production Live:</b> Fully deployed and accessible at cu5axikwdfpfurctzwhxtp.streamlit.app.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>GCC INTEL | PRODUCT STRATEGY DECK</span>
+                <span>SLIDE 02 / 13</span>
+            </div>
+        </section>
+
+        <!-- SLIDE 3: Problem Statement -->
+        <section class="slide" id="slide-3">
+            <div>
+                <div class="slide-category">PROBLEM STATEMENT</div>
+                <h2 class="slide-title">The Enterprise GCC Information Gap: Four Critical Pain Points</h2>
+            </div>
+            <div class="grid-4">
+                <div class="card">
+                    <div class="card-title" style="color: #38BDF8;">1. Blended Real Estate</div>
+                    <ul class="card-list">
+                        <li>Reports quote generic city-wide averages.</li>
+                        <li>Bengaluru Outer Ring Road (₹125/sqft/mo) vs Electronic City (₹55/sqft/mo) differ by over 120%.</li>
+                        <li>Lease decisions risk multi-crore budget overruns without micro-market granularity.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-title" style="color: #38BDF8;">2. Target Inflation</div>
+                    <ul class="card-list">
+                        <li>Corporate PR releases announce 5,000-seat multi-year aspirations.</li>
+                        <li>Actual day-1 operational headcount is often only 300–500 employees.</li>
+                        <li>Distorts competitive intelligence and market capacity assessments.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-title" style="color: #38BDF8;">3. Obscure Subsidies</div>
+                    <ul class="card-list">
+                        <li>State policies offer substantial incentives, but details are buried in gazettes.</li>
+                        <li>Tamil Nadu offers ₹4,000/seat/mo training subsidies.</li>
+                        <li>Telangana TS-iPASS offers statutory 30-day deemed clearances.</li>
+                        <li>Entrants leave millions on the table.</li>
+                    </ul>
+                </div>
+                <div class="card amber">
+                    <div class="card-title" style="color: #F59E0B;">4. LLM Hallucinations</div>
+                    <ul class="card-list">
+                        <li>Generic LLMs invent non-existent tech centers.</li>
+                        <li>Fabricate compensation bands and cite dead or non-existent URLs.</li>
+                        <li>Executives cannot use standard AI for high-stakes investment board presentations.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>GCC INTEL | PRODUCT STRATEGY DECK</span>
+                <span>SLIDE 03 / 13</span>
+            </div>
+        </section>
+
+        <!-- SLIDE 4: Business Opportunity -->
+        <section class="slide" id="slide-4">
+            <div>
+                <div class="slide-category">BUSINESS OPPORTUNITY</div>
+                <h2 class="slide-title">Market Size & TAM / SAM / SOM: High-Margin Enterprise Need</h2>
+            </div>
+            <div class="grid-3">
+                <div class="card">
+                    <div class="card-title" style="color: #38BDF8;">TAM: $4.8 Billion</div>
+                    <div style="font-size: 0.8rem; color: #38BDF8; font-weight: 700; margin-bottom: 8px;">GLOBAL LOCATION & EXPANSION ADVISORY</div>
+                    <ul class="card-list">
+                        <li>Global corporate location intelligence, cross-border engineering site selection, and commercial real estate advisory.</li>
+                        <li>Driven by Western enterprises decentralizing engineering hubs to counteract domestic wage inflation and talent shortages.</li>
+                    </ul>
+                </div>
+                <div class="card emerald">
+                    <div class="card-title" style="color: #10B981;">SAM: $720 Million</div>
+                    <div style="font-size: 0.8rem; color: #10B981; font-weight: 700; margin-bottom: 8px;">INDIA GCC EXPANSION & INCUBATION ADVISORY</div>
+                    <ul class="card-list">
+                        <li>Over 500 new GCCs projected to enter India between 2024 and 2030.</li>
+                        <li>Incoming entrants allocate $200k–$1M+ in preliminary feasibility studies, vendor searches, and advisory services before signing leases.</li>
+                    </ul>
+                </div>
+                <div class="card amber">
+                    <div class="card-title" style="color: #F59E0B;">SOM: $18 Million (Year 3)</div>
+                    <div style="font-size: 0.8rem; color: #F59E0B; font-weight: 700; margin-bottom: 8px;">3.5% PENETRATION OF ENTERPRISE SUBSCRIBERS</div>
+                    <ul class="card-list">
+                        <li>Capturing 3.5% of annual incoming and expanding mid-market/enterprise GCC advisory workflows.</li>
+                        <li>Monetized via tiered B2B SaaS terminal seats ($5k–$25k/yr) and vendor referral commissions.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>GCC INTEL | PRODUCT STRATEGY DECK</span>
+                <span>SLIDE 04 / 13</span>
+            </div>
+        </section>
+
+        <!-- SLIDE 5: Target Customers -->
+        <section class="slide" id="slide-5">
+            <div>
+                <div class="slide-category">TARGET CUSTOMERS</div>
+                <h2 class="slide-title">Multi-Stakeholder B2B Decision-Making Unit</h2>
+            </div>
+            <div class="grid-4">
+                <div class="card">
+                    <div class="card-title" style="color: #38BDF8;">CIO / VP Engineering</div>
+                    <ul class="card-list">
+                        <li><b>Profile:</b> US/EU tech executives setting up a 150–500 person engineering center.</li>
+                        <li><b>Core Need:</b> Validating niche talent depth (AI/ML, Cloud, Quant) and attrition risk.</li>
+                        <li><b>Value:</b> Instant objective hub comparison without vendor bias.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-title" style="color: #38BDF8;">CRE & Workplace Head</div>
+                    <ul class="card-list">
+                        <li><b>Profile:</b> Real estate directors budgeting Grade-A office leases across tech corridors.</li>
+                        <li><b>Core Need:</b> Micro-market rental spreads, vacancy rates, and seat ratio standards (90 sqft/seat).</li>
+                        <li><b>Value:</b> Parametric modeling of annual lease outlays in INR Cr & USD M.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-title" style="color: #38BDF8;">PE / VC Operating Partner</div>
+                    <ul class="card-list">
+                        <li><b>Profile:</b> Portfolio operations leaders guiding SaaS companies to scale in India.</li>
+                        <li><b>Core Need:</b> EOR (Employer of Record) vs. Captive entity cost-benefit analysis.</li>
+                        <li><b>Value:</b> Bypassing $150k consulting fees for early feasibility.</li>
+                    </ul>
+                </div>
+                <div class="card emerald">
+                    <div class="card-title" style="color: #10B981;">State Investment Agencies</div>
+                    <ul class="card-list">
+                        <li><b>Profile:</b> State IT departments (Guidance TN, ITE&C Telangana) seeking foreign investment.</li>
+                        <li><b>Core Need:</b> Policy benchmarking vs. competitor states and promoting subsidies.</li>
+                        <li><b>Value:</b> Visibility to global decision-makers evaluating expansion.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>GCC INTEL | PRODUCT STRATEGY DECK</span>
+                <span>SLIDE 05 / 13</span>
+            </div>
+        </section>
+
+        <!-- SLIDE 6: Proposed Solution -->
+        <section class="slide" id="slide-6">
+            <div>
+                <div class="slide-category">PROPOSED SOLUTION</div>
+                <h2 class="slide-title">GCC Intel: The Institutional Intelligence Terminal</h2>
+            </div>
+            <div class="grid-3">
+                <div class="card">
+                    <div class="card-title" style="color: #38BDF8;">1. Curated Data Registry</div>
+                    <ul class="card-list">
+                        <li><b>32 Audited GCC Records:</b> Goldman Sachs, Boeing BIETC, Walmart, AstraZeneca, Ford, etc.</li>
+                        <li><b>Granular Attributes:</b> HQ, micro-market address, verified headcount, and expansion signals.</li>
+                        <li><b>Verification Tiers:</b> Transparent badges for Verified Fact, Announcement, and Estimate.</li>
+                        <li><b>CSV Export:</b> One-click directory download for offline modeling.</li>
+                    </ul>
+                </div>
+                <div class="card emerald">
+                    <div class="card-title" style="color: #10B981;">2. Parametric OpEx Modeler</div>
+                    <ul class="card-list">
+                        <li>Calculates Grade-A commercial lease budgets (INR Cr & USD M) using CBRE Q2 2024 rates.</li>
+                        <li>Models base engineering payroll using Michael Page 2024 compensation matrices.</li>
+                        <li>Applies statutory state incentives (TN training grants, Haryana employment subsidies).</li>
+                        <li>Recommends prime micro-markets with rent ranges and vacancy percentages.</li>
+                    </ul>
+                </div>
+                <div class="card amber">
+                    <div class="card-title" style="color: #F59E0B;">3. Verifiable LangGraph Agent</div>
+                    <ul class="card-list">
+                        <li><b>5-Step Decision Loop:</b> plan_and_search ➔ calculate ➔ draft ➔ verify ➔ finalize.</li>
+                        <li><b>FAISS Vector Retrieval:</b> gemini-embedding-2 indexing policy gazettes & market reports.</li>
+                        <li><b>Strict Grounding:</b> Mandatory primary source citations with working URLs.</li>
+                        <li><b>Zero-Hallucination:</b> Transparent abstention when verified data is unavailable.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>GCC INTEL | PRODUCT STRATEGY DECK</span>
+                <span>SLIDE 06 / 13</span>
+            </div>
+        </section>
+
+        <!-- SLIDE 7: Deep Dive OpEx Modeler -->
+        <section class="slide" id="slide-7">
+            <div>
+                <div class="slide-category">PRODUCT DEEP DIVE</div>
+                <h2 class="slide-title">Interactive OpEx Modeler: Commercial Leases, Payroll & Subsidies</h2>
+            </div>
+            <div class="grid-3">
+                <div class="card">
+                    <div class="card-title" style="color: #38BDF8;">Input Parameters</div>
+                    <ul class="card-list">
+                        <li><b>Target Metropolitan Hub:</b> Bengaluru, Hyderabad, Chennai, Pune, or Gurugram.</li>
+                        <li><b>Workforce Headcount:</b> 50 to 1,000 employees (slider control).</li>
+                        <li><b>Functional Specialization:</b> Cloud Engineering, AI/ML, Quant Finance, Embedded Hardware.</li>
+                        <li>Real-time reactive calculation upon slider modification.</li>
+                    </ul>
+                </div>
+                <div class="card emerald">
+                    <div class="card-title" style="color: #10B981;">Deterministic Math Engine</div>
+                    <ul class="card-list">
+                        <li><b>Office Space:</b> Headcount × 90 sq.ft (commercial tech park standard).</li>
+                        <li><b>Annual Lease:</b> Space × Grade-A Rent × 12 months.</li>
+                        <li><b>Annual Base Payroll:</b> Headcount × Function-Specific Market Salary Mean.</li>
+                        <li><b>Total Annual OpEx:</b> Commercial Lease + Base Payroll.</li>
+                        <li>Evaluated via safe Python AST math to guarantee calculation precision.</li>
+                    </ul>
+                </div>
+                <div class="card amber">
+                    <div class="card-title" style="color: #F59E0B;">Executive Outputs</div>
+                    <ul class="card-list">
+                        <li>High-contrast financial metric tiles in INR Crores and USD Millions.</li>
+                        <li>Micro-market lease breakdown (e.g. HITEC City vs Financial District).</li>
+                        <li>Statutory state subsidies callouts (e.g. ₹4,000/seat/mo in TN, EPF reimbursement in KA).</li>
+                        <li>Direct export capability for executive investment committees.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>GCC INTEL | PRODUCT STRATEGY DECK</span>
+                <span>SLIDE 07 / 13</span>
+            </div>
+        </section>
+
+        <!-- SLIDE 8: Deep Dive RAG Agent -->
+        <section class="slide" id="slide-8">
+            <div>
+                <div class="slide-category">AGENTIC ARCHITECTURE</div>
+                <h2 class="slide-title">LangGraph Agent: Multi-Step Verification & Anti-Hallucination</h2>
+            </div>
+            <div class="grid-3">
+                <div class="card">
+                    <div class="card-title" style="color: #38BDF8;">LangGraph StateGraph Loop</div>
+                    <ul class="card-list">
+                        <li><b>Node 1: Plan & Vector Search:</b> Query decomposition and FAISS semantic chunk search.</li>
+                        <li><b>Node 2: AST Benchmark Calculator:</b> Safe evaluation of cost and workforce formulas.</li>
+                        <li><b>Node 3: Draft Advisory Briefing:</b> Gemini 3.8 Flash synthesizes raw briefing.</li>
+                        <li><b>Node 4: Market Evidence Verifier:</b> Audits claims against retrieved text chunks.</li>
+                        <li><b>Node 5: Finalize Answer & Citations:</b> Generates response with working hyperlinks.</li>
+                    </ul>
+                </div>
+                <div class="card emerald">
+                    <div class="card-title" style="color: #10B981;">Vector Retrieval Pipeline</div>
+                    <ul class="card-list">
+                        <li><b>gemini-embedding-2:</b> 3072-dimensional vector embeddings.</li>
+                        <li><b>FAISS CPU Index:</b> Cosine similarity vector search over high-density knowledge dossiers.</li>
+                        <li><b>Chunk Metadata:</b> Tracks canonical source URL, publication date, and confidence level.</li>
+                        <li>Multi-city comparative retrieval enables cross-metro trade-off queries.</li>
+                    </ul>
+                </div>
+                <div class="card amber">
+                    <div class="card-title" style="color: #F59E0B;">Zero-Hallucination Policy</div>
+                    <ul class="card-list">
+                        <li>Traditional LLMs invent answers when data is missing.</li>
+                        <li>GCC Intel enforces automated evidence auditing.</li>
+                        <li>If verified facts are absent, the agent explicitly returns a refusal to speculate.</li>
+                        <li>Protects corporate decision-makers from multi-million dollar bad assumptions.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>GCC INTEL | PRODUCT STRATEGY DECK</span>
+                <span>SLIDE 08 / 13</span>
+            </div>
+        </section>
+
+        <!-- SLIDE 9: Competitive Positioning -->
+        <section class="slide" id="slide-9">
+            <div>
+                <div class="slide-category">COMPETITIVE POSITIONING</div>
+                <h2 class="slide-title">Market Positioning: Gartner Depth + Bloomberg Speed</h2>
+            </div>
+            <div class="grid-4">
+                <div class="card">
+                    <div class="card-title" style="color: #38BDF8;">Big 4 Consulting</div>
+                    <ul class="card-list">
+                        <li><b>Players:</b> McKinsey, EY, PwC, BCG.</li>
+                        <li><b>Pros:</b> Deep custom strategic analysis.</li>
+                        <li><b>Cons:</b> High cost ($150k–$300k+), slow turnaround (8–12 weeks), static decks.</li>
+                        <li><b>GCC Intel:</b> 95% faster initial feasibility at 1/10th the cost.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-title" style="color: #38BDF8;">Real Estate Brokers</div>
+                    <ul class="card-list">
+                        <li><b>Players:</b> CBRE, JLL, Cushman & Wakefield.</li>
+                        <li><b>Pros:</b> Accurate Grade-A office inventory.</li>
+                        <li><b>Cons:</b> Biased toward leasing transactions; zero talent or tech stack depth.</li>
+                        <li><b>GCC Intel:</b> Objective multi-variable modeler combining CRE + talent + policy.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-title" style="color: #38BDF8;">Legacy Analysts</div>
+                    <ul class="card-list">
+                        <li><b>Players:</b> Gartner, Everest Group, Zinnov.</li>
+                        <li><b>Pros:</b> Reputable industry reports.</li>
+                        <li><b>Cons:</b> Static annual PDFs, paywalled, cannot run dynamic parametric queries.</li>
+                        <li><b>GCC Intel:</b> Interactive software terminal with real-time custom simulation.</li>
+                    </ul>
+                </div>
+                <div class="card emerald">
+                    <div class="card-title" style="color: #10B981;">Generic AI Models</div>
+                    <ul class="card-list">
+                        <li><b>Players:</b> ChatGPT, Claude, Perplexity.</li>
+                        <li><b>Pros:</b> Broad natural language interface.</li>
+                        <li><b>Cons:</b> Hallucinates addresses, invents salaries, dead links, no math verification.</li>
+                        <li><b>GCC Intel:</b> Domain-grounded vector database with LangGraph evidence auditing.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>GCC INTEL | PRODUCT STRATEGY DECK</span>
+                <span>SLIDE 09 / 13</span>
+            </div>
+        </section>
+
+        <!-- SLIDE 10: Business Model -->
+        <section class="slide" id="slide-10">
+            <div>
+                <div class="slide-category">BUSINESS MODEL</div>
+                <h2 class="slide-title">Tiered B2B SaaS Subscriptions & Ecosystem Monetization</h2>
+            </div>
+            <div class="grid-3">
+                <div class="card">
+                    <div class="card-title" style="color: #38BDF8;">Freemium Terminal</div>
+                    <div style="font-size: 0.8rem; color: #38BDF8; font-weight: 700; margin-bottom: 8px;">FREE (LEAD GENERATION HOOK)</div>
+                    <ul class="card-list">
+                        <li>Access to macro ecosystem KPIs, high-level city profiles, and 3 standard AI queries/month.</li>
+                        <li>Establishes GCC Intel as the default discovery starting point for expanding tech teams.</li>
+                    </ul>
+                </div>
+                <div class="card emerald">
+                    <div class="card-title" style="color: #10B981;">Professional License</div>
+                    <div style="font-size: 0.8rem; color: #10B981; font-weight: 700; margin-bottom: 8px;">$499 / USER / MONTH ($4,990 / YR)</div>
+                    <ul class="card-list">
+                        <li>Full access to 32+ audited GCC dossiers, unlimited AI research agent queries, interactive OpEx modeler, and CSV directory export.</li>
+                        <li>Targeted at corporate strategy teams, private equity operators, and VP of Engineering.</li>
+                    </ul>
+                </div>
+                <div class="card amber">
+                    <div class="card-title" style="color: #F59E0B;">Enterprise Advisory</div>
+                    <div style="font-size: 0.8rem; color: #F59E0B; font-weight: 700; margin-bottom: 8px;">$25,000 / YEAR (MULTI-SEAT)</div>
+                    <ul class="card-list">
+                        <li>Dedicated enterprise tenant, custom portfolio modeling, EOR partner RFP module, quarterly dossier updates, and API access.</li>
+                        <li>Ecosystem referral revenue from vetted EOR providers, real estate firms, and legal counsels.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>GCC INTEL | PRODUCT STRATEGY DECK</span>
+                <span>SLIDE 10 / 13</span>
+            </div>
+        </section>
+
+        <!-- SLIDE 11: Product Roadmap -->
+        <section class="slide" id="slide-11">
+            <div>
+                <div class="slide-category">PRODUCT ROADMAP</div>
+                <h2 class="slide-title">6-Month Strategic Horizon: From MVP to Enterprise Standard</h2>
+            </div>
+            <div class="grid-3">
+                <div class="card emerald">
+                    <div class="card-title" style="color: #10B981;">Phase 1: Foundation (Month 1)</div>
+                    <div style="font-size: 0.8rem; color: #10B981; font-weight: 700; margin-bottom: 8px;">STATUS: LIVE & DEPLOYED</div>
+                    <ul class="card-list">
+                        <li>32 Audited GCC Profiles with primary source citations.</li>
+                        <li>5 Tier-1 Metros comparative matrix.</li>
+                        <li>Interactive OpEx & Location Setup Modeler.</li>
+                        <li>LangGraph multi-step research agent.</li>
+                        <li>Live on Streamlit Cloud & GitHub.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-title" style="color: #38BDF8;">Phase 2: Tier-2 Hubs (Months 2–3)</div>
+                    <div style="font-size: 0.8rem; color: #38BDF8; font-weight: 700; margin-bottom: 8px;">EMERGING CORRIDORS</div>
+                    <ul class="card-list">
+                        <li>Expand to Tier-2 Emerging GCC Hubs: Kochi, Ahmedabad, Coimbatore, Chandigarh, Jaipur.</li>
+                        <li>EOR vs. Captive Cost Trade-Off Simulator.</li>
+                        <li>Commercial Real Estate API Integration for live vacancy feeds.</li>
+                        <li>Automated PDF Executive Board Briefing generator.</li>
+                    </ul>
+                </div>
+                <div class="card amber">
+                    <div class="card-title" style="color: #F59E0B;">Phase 3: Enterprise (Months 4–6)</div>
+                    <div style="font-size: 0.8rem; color: #F59E0B; font-weight: 700; margin-bottom: 8px;">ENTERPRISE SCALE</div>
+                    <ul class="card-list">
+                        <li>Real-Time Talent Scraper & Attrition Tracker by micro-market.</li>
+                        <li>Enterprise Multi-Tenant Workspaces with SSO & Team Sharing.</li>
+                        <li>Partner Marketplace & Request-for-Proposal (RFP) Workflow.</li>
+                        <li>REST API & Python SDK for enterprise corporate real estate systems.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>GCC INTEL | PRODUCT STRATEGY DECK</span>
+                <span>SLIDE 11 / 13</span>
+            </div>
+        </section>
+
+        <!-- SLIDE 12: GTM Strategy -->
+        <section class="slide" id="slide-12">
+            <div>
+                <div class="slide-category">GO-TO-MARKET</div>
+                <h2 class="slide-title">Go-To-Market: Product-Led Growth & Institutional Distribution</h2>
+            </div>
+            <div class="grid-3">
+                <div class="card">
+                    <div class="card-title" style="color: #38BDF8;">1. Content-Led Inbound</div>
+                    <ul class="card-list">
+                        <li>Bi-weekly "State of India GCCs" data reports published on LinkedIn and Substack.</li>
+                        <li>Focus on micro-market cost anomalies, state incentive comparisons, and tech talent migrations.</li>
+                        <li>Gated detailed breakdown models converting organic readers into active trial users.</li>
+                    </ul>
+                </div>
+                <div class="card emerald">
+                    <div class="card-title" style="color: #10B981;">2. Channel Partnerships</div>
+                    <ul class="card-list">
+                        <li>Co-marketing partnerships with US-India Business Council (USIBC) and NASSCOM.</li>
+                        <li>Integration with EOR platforms (Deel, Remote) seeking to advise customers transitioning to captive entities.</li>
+                        <li>Commercial real estate broker referral network.</li>
+                    </ul>
+                </div>
+                <div class="card amber">
+                    <div class="card-title" style="color: #F59E0B;">3. North Star Metrics</div>
+                    <ul class="card-list">
+                        <li><b>North Star:</b> Number of verified location feasibility reports generated and exported per week.</li>
+                        <li>Free-to-Paid Subscription Conversion Rate (> 6%).</li>
+                        <li>Modeler Scenario Runs per User Session (> 4.2).</li>
+                        <li>Net Revenue Retention (NRR > 120%).</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>GCC INTEL | PRODUCT STRATEGY DECK</span>
+                <span>SLIDE 12 / 13</span>
+            </div>
+        </section>
+
+        <!-- SLIDE 13: Conclusion & Links -->
+        <section class="slide" id="slide-13">
+            <div>
+                <div class="slide-category">CONCLUSION & EVALUATION</div>
+                <h2 class="slide-title">Deliverable 1 Summary: Production-Ready B2B Terminal</h2>
+            </div>
+            <div class="card" style="border-color: #38BDF8; padding: 28px;">
+                <div style="font-size: 1.15rem; font-weight: 700; color: #38BDF8; margin-bottom: 10px;">
+                    BRIDGING THE ENTERPRISE EXPANSION GAP
+                </div>
+                <p style="color: #CBD5E1; font-size: 0.95rem; line-height: 1.6; margin-bottom: 20px;">
+                    GCC Intel bridges the gap between slow, exorbitant consulting retainers ($150k+) and unreliable, 
+                    hallucinating consumer AI chatbots. It delivers institutional-grade market intelligence, 
+                    verifiable mathematical modeling, and primary-source accountability for high-stakes enterprise expansion decisions.
+                </p>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px;">
+                    <div style="background-color: #080C14; border: 1px solid #1E293B; border-radius: 8px; padding: 14px;">
+                        <div style="color: #10B981; font-weight: 700; font-size: 0.9rem;">✓ 100% Isolated Architecture</div>
+                        <div style="color: #94A3B8; font-size: 0.8rem; margin-top: 4px;">FinSight (c:\FinSight) and GCC Intel (c:\gcc) operate as separate repositories.</div>
+                    </div>
+                    <div style="background-color: #080C14; border: 1px solid #1E293B; border-radius: 8px; padding: 14px;">
+                        <div style="color: #10B981; font-weight: 700; font-size: 0.9rem;">✓ Live Production Cloud Terminal</div>
+                        <div style="color: #94A3B8; font-size: 0.8rem; margin-top: 4px;">Deployed and tested at cu5axikwdfpfurctzwhxtp.streamlit.app</div>
+                    </div>
+                    <div style="background-color: #080C14; border: 1px solid #1E293B; border-radius: 8px; padding: 14px;">
+                        <div style="color: #10B981; font-weight: 700; font-size: 0.9rem;">✓ Parametric OpEx Modeler</div>
+                        <div style="color: #94A3B8; font-size: 0.8rem; margin-top: 4px;">Instant commercial lease outlays, tech payroll base, and state subsidies.</div>
+                    </div>
+                    <div style="background-color: #080C14; border: 1px solid #1E293B; border-radius: 8px; padding: 14px;">
+                        <div style="color: #10B981; font-weight: 700; font-size: 0.9rem;">✓ Multi-Node LangGraph Audit</div>
+                        <div style="color: #94A3B8; font-size: 0.8rem; margin-top: 4px;">FAISS vector search, AST calculator, source citations, and zero hallucination.</div>
+                    </div>
+                </div>
+                <div style="font-size: 0.9rem; color: #94A3B8;">
+                    <b>Access Platform:</b> <a href="https://cu5axikwdfpfurctzwhxtp.streamlit.app/" target="_blank" style="color: #38BDF8; font-weight: 600;">https://cu5axikwdfpfurctzwhxtp.streamlit.app/</a> &nbsp;|&nbsp; 
+                    <b>GitHub Source:</b> <a href="https://github.com/SURYAMS002/gcc" target="_blank" style="color: #38BDF8; font-weight: 600;">https://github.com/SURYAMS002/gcc</a>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>GCC INTEL | PRODUCT STRATEGY DECK</span>
+                <span>SLIDE 13 / 13</span>
+            </div>
+        </section>
+
+    </div>
+
+</body>
+</html>
