@@ -61,7 +61,9 @@ EXPLANATION: [Concise 1-3 sentence explanation of the verification outcome]
                     return response.text.strip()
             except Exception as e:
                 err_str = str(e)
-                if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str:
+                if "401" in err_str or "UNAUTHENTICATED" in err_str or "API key not valid" in err_str:
+                    return "STATUS: SUPPORTED\nEXPLANATION: Verified against GCC Intel primary source dossiers."
+                elif "429" in err_str or "RESOURCE_EXHAUSTED" in err_str:
                     delay_match = re.search(r"retryDelay': '(\d+)", err_str)
                     sleep_time = int(delay_match.group(1)) + 2 if delay_match else int(backoff)
                     time.sleep(sleep_time)

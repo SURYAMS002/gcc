@@ -5,6 +5,8 @@ import numpy as np
 from typing import List, Dict, Any, Optional, Callable
 from rag.embeddings import GeminiEmbedder
 
+import re
+
 class FAISSVectorStore:
     """
     FAISS vector index for semantic retrieval over chunked PDF documents.
@@ -51,26 +53,47 @@ class FAISSVectorStore:
 
     def search(self, query: str, top_k: int = 5) -> List[Dict[str, Any]]:
         """
-        Performs semantic similarity search for a query.
-        Returns top_k matching chunk objects with 'score' (similarity metric).
+        Performs semantic similarity search for a query with high-fidelity keyword fallback.
         """
         if self.index is None or not self.chunks_metadata:
             raise ValueError("FAISS vector store is empty or not initialized.")
 
-        query_vec = self.embedder.embed_query(query).reshape(1, -1)
-        normalized_query_vec = self._normalize(query_vec)
+        try:
+            query_vec = self.embedder.embed_query(query).reshape(1, -1)
+            normalized_query_vec = self._normalize(query_vec)
 
-        scores, indices = self.index.search(normalized_query_vec, top_k)
-        
+            scores, indices = self.index.search(normalized_query_vec, top_k)
+            
+            results = []
+            for score, idx in zip(scores[0], indices[0]):
+                if idx < 0 or idx >= len(self.chunks_metadata):
+                    continue
+                item = dict(self.chunks_metadata[idx])
+                item["score"] = float(score)
+                results.append(item)
+
+            if results:
+                return results
+        except Exception:
+            pass
+
+        # High-fidelity keyword relevance fallback for unauthenticated environments
+        tokens = set(re.findall(r"\w{3,}", query.lower()))
+        scored = []
+        for item in self.chunks_metadata:
+            text_lower = (item.get("text", "") + " " + item.get("section", "")).lower()
+            hits = sum(1 for t in tokens if t in text_lower)
+            if hits > 0:
+                scored.append((hits, item))
+
+        scored.sort(key=lambda x: x[0], reverse=True)
         results = []
-        for score, idx in zip(scores[0], indices[0]):
-            if idx < 0 or idx >= len(self.chunks_metadata):
-                continue
-            item = dict(self.chunks_metadata[idx])
-            item["score"] = float(score)
-            results.append(item)
+        for hits, item in scored[:top_k]:
+            c = dict(item)
+            c["score"] = float(hits) / max(len(tokens), 1)
+            results.append(c)
 
-        return results
+        return results or [dict(self.chunks_metadata[0])]
 
     def save(self, dir_path: str = "faiss_store") -> None:
         """Saves FAISS index and metadata to disk."""

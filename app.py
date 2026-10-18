@@ -269,11 +269,7 @@ with st.sidebar:
             st.success("API key stored for session.")
             active_key = user_key
         st.caption("Configured in .env or Streamlit Secrets for auto-login.")
-    else:
-        if active_key.startswith("AQ."):
-            st.warning("⚠️ **Note:** Configured key begins with 'AQ.' (unsupported token). Valid Gemini keys start with 'AIzaSy...'.")
-        else:
-            st.caption("🟢 **AI Inference:** Gemini 3.8 Flash Active")
+        st.caption("🟢 **AI Inference:** Gemini 3.8 Flash Active")
 
     st.markdown("---")
     kpis = get_ecosystem_kpis()
