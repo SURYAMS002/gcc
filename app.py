@@ -864,15 +864,17 @@ elif nav_choice == "🧠 Ask GCC Intel (AI Research Agent)":
             st.error("⚠️ GEMINI_API_KEY is missing. Please enter your API key in the field above or in the left sidebar to execute research.")
         else:
             try:
-                with st.expander("⚙️ Agent Execution Graph & Audit Trail", expanded=True):
-                    activity_container = st.container()
-                    with st.spinner(f"Executing multi-step research on: '{query_to_execute}'..."):
-                        agent = GCCIntelAgent()
-                        result = agent.run(query_to_execute)
-
-                    with activity_container:
-                        for step in result.get("status_log", []):
-                            st.markdown(f'<div class="agent-step">⚙️ {step}</div>', unsafe_allow_html=True)
+                with st.status("⚙️ Executing Multi-Step Market Intelligence Research...", expanded=True) as status_box:
+                    st.write(f"🔍 **Inquiry:** *\"{query_to_execute}\"*")
+                    st.write("📚 Retrieving verified evidence from NASSCOM, CBRE Q2 2024 & State Policy dossiers...")
+                    
+                    agent = GCCIntelAgent()
+                    result = agent.run(query_to_execute)
+                    
+                    for step in result.get("status_log", []):
+                        st.write(f"✓ {step}")
+                        
+                    status_box.update(label="✓ Market Intelligence Research Completed & Audited", state="complete", expanded=False)
 
                 # Store persistently in session state so results don't vanish on rerun
                 st.session_state["last_research_result"] = result

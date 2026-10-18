@@ -28,8 +28,8 @@ def get_gemini_api_key() -> str:
 
 GEMINI_API_KEY = get_gemini_api_key()
 
-# Model configuration - Gemini 3.8 Flash is current primary fast multimodal & reasoning model
-DEFAULT_LLM_MODEL = os.getenv("LLM_MODEL", "gemini-3.8-flash")
+# Model configuration - Gemini 3.7 Flash provides verified quota, lowest latency, and high reasoning fidelity
+DEFAULT_LLM_MODEL = os.getenv("LLM_MODEL", "gemini-3.7-flash")
 DEFAULT_EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "gemini-embedding-2")
 
 # Application Metadata

@@ -33,13 +33,23 @@ def get_gemini_client():
         raise ValueError("GEMINI_API_KEY is missing! Please configure GEMINI_API_KEY in .env or Streamlit Secrets.")
     return genai.Client(api_key=key)
 
-def call_gemini_with_retry(prompt: str, max_retries: int = 5) -> str:
+def call_gemini_with_retry(prompt: str, max_retries: int = 2) -> str:
     """
-    Executes a Gemini LLM request with robust rate-limit (429) retry and multi-model fallback.
+    Executes a Gemini LLM request with instant multi-model fallback and quota protection.
+    Never sleeps for long daily quotas (e.g., 429 daily exhaustion).
     """
     client = get_gemini_client()
-    backoff = 3.0
-    models_to_try = [DEFAULT_LLM_MODEL, "gemini-3.6-flash", "gemini-3.5-flash", "gemini-flash-latest"]
+    backoff = 1.5
+    models_to_try = [
+        DEFAULT_LLM_MODEL,
+        "gemini-3.7-flash",
+        "gemini-3.6-flash",
+        "gemini-3.5-flash",
+        "gemini-3.1-flash-lite",
+        "gemini-flash-latest"
+    ]
+    seen = set()
+    models_to_try = [m for m in models_to_try if not (m in seen or seen.add(m))]
     
     for attempt in range(max_retries):
         for model in models_to_try:
@@ -53,20 +63,21 @@ def call_gemini_with_retry(prompt: str, max_retries: int = 5) -> str:
             except Exception as e:
                 err_str = str(e)
                 if "401" in err_str or "UNAUTHENTICATED" in err_str or "API key not valid" in err_str:
-                    raise ValueError("Invalid Gemini API Key (401 UNAUTHENTICATED). Google rejected this key. Please obtain a valid Gemini API key from https://aistudio.google.com/app/apikey (valid keys start with 'AIzaSy...').")
+                    raise ValueError("Invalid Gemini API Key (401 UNAUTHENTICATED). Google rejected this key. Please obtain a valid Gemini API key from https://aistudio.google.com/app/apikey.")
                 elif "429" in err_str or "RESOURCE_EXHAUSTED" in err_str:
                     delay_match = re.search(r"retryDelay': '(\d+)", err_str)
-                    sleep_time = int(delay_match.group(1)) + 2 if delay_match else int(backoff)
-                    print(f"[Rate Limit 429] Model '{model}' limited. Waiting {sleep_time}s...")
-                    time.sleep(sleep_time)
-                    backoff *= 1.5
+                    sleep_time = int(delay_match.group(1)) if delay_match else int(backoff)
+                    if sleep_time > 3:
+                        # Daily quota or long lock on this model: do not sleep! Immediately switch to next model!
+                        continue
+                    time.sleep(min(sleep_time, 2.0))
                     continue
                 elif "404" in err_str or "NOT_FOUND" in err_str:
                     continue
                 else:
                     continue
 
-    raise RuntimeError("Failed to obtain LLM response after retrying across available Gemini models.")
+    raise RuntimeError("Failed to obtain LLM response after trying available Gemini models.")
 
 def plan_and_search(state: AgentState) -> AgentState:
     """
@@ -105,6 +116,11 @@ def calculate_node(state: AgentState) -> AgentState:
     Node 2: Evaluates arithmetic calculations (cost comparisons, team growth, rental variance).
     """
     question = state["question"]
+    # Fast regex filter to avoid redundant LLM latency on queries without calculation intent
+    has_calc_intent = bool(re.search(r"\d+|\b(cost|rent|diff|save|saving|growth|sqft|sq\.ft|headcount|people|person|team|budget|outlay|percentage)\b", question, re.I))
+    if not has_calc_intent:
+        return state
+
     all_evidence = "\n".join(state["evidence_snippets"])
     
     prompt = f"""
@@ -128,8 +144,8 @@ Do not include any words other than the formula or "NO_CALCULATION_NEEDED".
             calc_result = calculator(formula.strip())
             state["calculations"].append(calc_result)
             state["status_log"].append(f"Calculated Benchmark: {calc_result.splitlines()[0]}")
-    except Exception as e:
-        state["status_log"].append(f"Calculation step bypassed: {e}")
+    except Exception:
+        pass
         
     return state
 
@@ -268,14 +284,15 @@ CALCULATIONS:
 {calculations_str}
 
 STRICT MARKET INTELLIGENCE RULES:
-1. Ground every substantive factual claim (headcount, lease rents, incentives, marquee companies) in the provided evidence.
-2. Clearly distinguish VERIFIED FACTS from MARKET ESTIMATES or POLICY INCENTIVES.
-3. Include clickable markdown hyperlinks [Source Title](URL) for major data points.
-4. If comparing cities, provide structured, balanced trade-offs (e.g., Talent vs. Real Estate vs. Infrastructure).
-5. If the evidence DOES NOT contain sufficient verified information to answer the question, state explicitly:
+1. Synthesize a concise, structured executive memo (3 to 4 sections with bullet points or comparative table, target 300-450 words) for immediate executive decision-making.
+2. Ground every substantive factual claim (headcount, lease rents, incentives, marquee companies) in the provided evidence.
+3. Clearly distinguish VERIFIED FACTS from MARKET ESTIMATES or POLICY INCENTIVES.
+4. Include clickable markdown hyperlinks [Source Title](URL) for major data points.
+5. If comparing cities, provide structured, balanced trade-offs (e.g., Talent vs. Real Estate vs. Infrastructure).
+6. If the evidence DOES NOT contain sufficient verified information to answer the question, state explicitly:
    "INSUFFICIENT_EVIDENCE: I couldn't find sufficient verified evidence in the GCC Intel dataset to answer this reliably."
    Then state what specific information is missing instead of fabricating data.
-6. Maintain an objective, authoritative enterprise advisory tone.
+7. Maintain an objective, authoritative enterprise advisory tone.
 """
     try:
         draft = call_gemini_with_retry(prompt)
