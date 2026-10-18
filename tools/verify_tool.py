@@ -34,7 +34,7 @@ def verify_evidence(claim: str, source_evidence: str, max_retries: int = 5) -> s
     if not key:
         return "STATUS: SUPPORTED\nEXPLANATION: Grounded against local verified dossiers."
 
-    client = genai.Client(api_key=key)
+    client = genai.Client(api_key=key, http_options={"timeout": 12000})
 
     prompt = f"""
 You are an expert market intelligence auditor and verification engine for India's GCC ecosystem.
@@ -61,14 +61,12 @@ POLICY_ACCURACY: [YES / NO / NOT_APPLICABLE]
 EXPLANATION: [Concise 1-3 sentence explanation of the verification outcome]
 """
 
-    backoff = 1.5
+    backoff = 1.0
     models_to_try = [
-        DEFAULT_LLM_MODEL,
-        "gemini-3.7-flash",
-        "gemini-3.6-flash",
         "gemini-3.5-flash",
-        "gemini-3.1-flash-lite",
-        "gemini-flash-latest"
+        "gemini-3.6-flash",
+        "gemini-3.7-flash",
+        "gemini-3.1-flash-lite"
     ]
     seen = set()
     models_to_try = [m for m in models_to_try if not (m in seen or seen.add(m))]

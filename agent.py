@@ -31,7 +31,7 @@ def get_gemini_client():
     key = get_gemini_api_key()
     if not key:
         raise ValueError("GEMINI_API_KEY is missing! Please configure GEMINI_API_KEY in .env or Streamlit Secrets.")
-    return genai.Client(api_key=key)
+    return genai.Client(api_key=key, http_options={"timeout": 12000})
 
 def call_gemini_with_retry(prompt: str, max_retries: int = 2) -> str:
     """
@@ -39,14 +39,12 @@ def call_gemini_with_retry(prompt: str, max_retries: int = 2) -> str:
     Never sleeps for long daily quotas (e.g., 429 daily exhaustion).
     """
     client = get_gemini_client()
-    backoff = 1.5
+    backoff = 1.0
     models_to_try = [
-        DEFAULT_LLM_MODEL,
-        "gemini-3.7-flash",
-        "gemini-3.6-flash",
         "gemini-3.5-flash",
-        "gemini-3.1-flash-lite",
-        "gemini-flash-latest"
+        "gemini-3.6-flash",
+        "gemini-3.7-flash",
+        "gemini-3.1-flash-lite"
     ]
     seen = set()
     models_to_try = [m for m in models_to_try if not (m in seen or seen.add(m))]
@@ -334,13 +332,9 @@ def verify_node(state: AgentState) -> AgentState:
 
 def decide_next_step(state: AgentState) -> str:
     """
-    Conditional Edge: Decides whether to end or re-search for more evidence.
+    Conditional Edge: Finalizes answer immediately after primary retrieval and audit.
     """
-    if state["abstained"] or state["is_supported"] or state["iteration_count"] >= 2:
-        return "finalize"
-        
-    state["status_log"].append("Initiating targeted follow-up retrieval...")
-    return "re_search"
+    return "finalize"
 
 def finalize_answer(state: AgentState) -> AgentState:
     """
